@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "Lua.hpp"
-#include "Scanner.cpp"
+#include "Scanner.hpp"
 
 bool hadError = false;
 

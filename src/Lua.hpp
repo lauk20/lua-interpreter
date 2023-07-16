@@ -19,9 +19,7 @@ namespace Lua {
     /// @param line line where the error occurs
     /// @param message message of the error
     ///
-    void error(int line, std::string message) {
-        report(line, "", message);
-    }
+    void error(int line, std::string message);
 
     /// print out error message to stdout
     /// @param line the line where the error occurs
