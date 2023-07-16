@@ -24,6 +24,9 @@ class Scanner {
         /// @brief function to scan the source code for the next token
         void scanToken();
 
+        /// @brief read numbers as long doubles, includes decimal numbers
+        void number();
+
         /// @brief read string literals between " and ".
         void string();
 
