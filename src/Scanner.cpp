@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 
-#include "Token.cpp"
+#include "Scanner.hpp"
 
 class Scanner {
     std::string source;
@@ -126,5 +126,7 @@ class Scanner {
                 start = current;
                 scanToken();
             }
+
+            return tokens;
         }
 };
