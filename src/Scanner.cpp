@@ -82,9 +82,29 @@ class Scanner {
                     break;
                 
                 default:
-                    Lua::error(line, "Unexpected character.");
+                    if (isDigit(c)) {
+                        number();
+                    } else {
+                        Lua::error(line, "Unexpected character.");
+                    }
                     break;
             }
+        }
+
+        void number() {
+            while (isDigit(peek())) {
+                advance();
+            }
+
+            if (peek() == '.' && isDigit(peekNext())) {
+                advance();
+            }
+
+            while (isDigit(peek())) {
+                advance();
+            }
+
+            addToken(NUMBER, std::stold(source.substr(start, current - start + 1).c_str()));
         }
 
         void string() {
@@ -122,6 +142,18 @@ class Scanner {
             }
 
             return source[current];
+        }
+
+        char peekNext() {
+            if (current + 1 >= source.size()) {
+                return '\0';
+            }
+
+            return source[current + 1];
+        }
+
+        bool isDigit(char c) {
+            return c >= '0' && c <= '9';
         }
 
         char advance() {

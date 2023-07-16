@@ -37,6 +37,15 @@ class Scanner {
         /// @return the character at the current position of the source code. null char if at end
         char peek();
 
+        /// @brief get the character after the current position
+        /// @return the character at the position after current position of source code. null if is the end
+        char peekNext();
+
+        /// @brief determine whether c is a digit
+        /// @param c char to determine
+        /// @return true if c is a digit, false otherwise
+        bool isDigit(char c);
+
         /// @brief consume the current character and then increments the current index
         /// @return the character at the current index
         char advance();
