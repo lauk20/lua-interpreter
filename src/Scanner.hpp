@@ -24,6 +24,9 @@ class Scanner {
         /// @brief function to scan the source code for the next token
         void scanToken();
 
+        /// @brief read string literals between " and ".
+        void string();
+
         /// @brief determine whether the next token matches the expected token.
         /// consumes it if it does and increments the current position
         /// @param expected the expected token to match

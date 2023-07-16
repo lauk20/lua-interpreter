@@ -76,11 +76,32 @@ class Scanner {
                     break;
                 case '\n':
                     break;
+
+                case '"':
+                    string();
+                    break;
                 
                 default:
                     Lua::error(line, "Unexpected character.");
                     break;
             }
+        }
+
+        void string() {
+            while (peek() != '"' && !isAtEnd()) {
+                if (peek() == '\n') line++;
+                advance();
+            }
+
+            if (isAtEnd()) {
+                Lua::error(line, "Unterminated string.");
+                return;
+            }
+
+            advance();
+
+            std::string value = source.substr(start, current - start + 1);
+            addToken(STRING, value);
         }
 
         bool match(char expected) {
