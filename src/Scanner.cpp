@@ -38,7 +38,14 @@ class Scanner {
                     addToken(DOT);
                     break;
                 case '-':
-                    addToken(MINUS);
+                    if (match('-')) {
+                        while (peek() != '\n' && !isAtEnd()) {
+                            advance();
+                        }
+                    } else {
+                        addToken(MINUS);
+                    }
+
                     break;
                 case '+':
                     addToken(PLUS);
@@ -61,6 +68,18 @@ class Scanner {
                 case '>':
                     addToken(match('=') ? GREATER_EQUAL : EQUAL);
                     break;
+                case ' ':
+                    break;
+                case '\r':
+                    break;
+                case '\t':
+                    break;
+                case '\n':
+                    break;
+                
+                default:
+                    Lua::error(line, "Unexpected character.");
+                    break;
             }
         }
 
@@ -74,6 +93,14 @@ class Scanner {
 
             current++;
             return true;
+        }
+
+        char peek() {
+            if (isAtEnd()) {
+                return '\0';
+            }
+
+            return source[current];
         }
 
         char advance() {
