@@ -3,214 +3,204 @@
 #include <unordered_map>
 
 #include "Scanner.hpp"
+#include "Lua.hpp"
 
-class Scanner {
-    static const std::unordered_map<std::string, TokenType> keywords;
-    std::string source;
-    std::vector<Token> tokens;
-    int start = 0;
-    int current = 0;
-    int line = 1;
+bool Scanner::isAtEnd() {
+    return current >= source.size();
+}
 
-    private:
-        bool isAtEnd() {
-            return current >= source.size();
-        }
+void Scanner::scanToken() {
+    char c = advance();
 
-        void scanToken() {
-            char c = advance();
-
-            switch(c) {
-                case '(':
-                    addToken(LEFT_PAREN);
-                    break;
-                case ')':
-                    addToken(RIGHT_PAREN);
-                    break;
-                case '{':
-                    addToken(LEFT_BRACE);
-                    break;
-                case '}':
-                    addToken(RIGHT_BRACE);
-                    break;
-                case ',':
-                    addToken(COMMA);
-                    break;
-                case '.':
-                    addToken(DOT);
-                    break;
-                case '-':
-                    if (match('-')) {
-                        while (peek() != '\n' && !isAtEnd()) {
-                            advance();
-                        }
-                    } else {
-                        addToken(MINUS);
-                    }
-
-                    break;
-                case '+':
-                    addToken(PLUS);
-                    break;
-                case ';':
-                    addToken(SEMICOLON);
-                    break;
-                case '*':
-                    addToken(STAR);
-                    break;
-                case '~':
-                    addToken(match('=') ? TILDE_EQUAL : TILDE);
-                    break;
-                case '=':
-                    addToken(match('=') ? EQUAL_EQUAL : EQUAL);
-                    break;
-                case '<':
-                    addToken(match('=') ? LESS_EQUAL : EQUAL);
-                    break;
-                case '>':
-                    addToken(match('=') ? GREATER_EQUAL : EQUAL);
-                    break;
-                case ' ':
-                    break;
-                case '\r':
-                    break;
-                case '\t':
-                    break;
-                case '\n':
-                    break;
-
-                case '"':
-                    string();
-                    break;
-                
-                default:
-                    if (isDigit(c)) {
-                        number();
-                    } else if (isAlpha(c)) {
-                        identifier();
-                    } else {
-                        Lua::error(line, "Unexpected character.");
-                    }
-                    break;
-            }
-        }
-
-        void identifier() {
-            while (isAlphaNumeric(peek())) {
-                advance();
+    switch(c) {
+        case '(':
+            addToken(LEFT_PAREN);
+            break;
+        case ')':
+            addToken(RIGHT_PAREN);
+            break;
+        case '{':
+            addToken(LEFT_BRACE);
+            break;
+        case '}':
+            addToken(RIGHT_BRACE);
+            break;
+        case ',':
+            addToken(COMMA);
+            break;
+        case '.':
+            addToken(DOT);
+            break;
+        case '-':
+            if (match('-')) {
+                while (peek() != '\n' && !isAtEnd()) {
+                    advance();
+                }
+            } else {
+                addToken(MINUS);
             }
 
-            std::string text = source.substr(start, current - start);
-            TokenType type = IDENTIFIER;
-            if (keywords.find(text) != keywords.end()) {
-                type = keywords.at(text);
+            break;
+        case '+':
+            addToken(PLUS);
+            break;
+        case ';':
+            addToken(SEMICOLON);
+            break;
+        case '*':
+            addToken(STAR);
+            break;
+        case '~':
+            addToken(match('=') ? TILDE_EQUAL : TILDE);
+            break;
+        case '=':
+            addToken(match('=') ? EQUAL_EQUAL : EQUAL);
+            break;
+        case '<':
+            addToken(match('=') ? LESS_EQUAL : EQUAL);
+            break;
+        case '>':
+            addToken(match('=') ? GREATER_EQUAL : EQUAL);
+            break;
+        case ' ':
+            break;
+        case '\r':
+            break;
+        case '\t':
+            break;
+        case '\n':
+            break;
+
+        case '"':
+            string();
+            break;
+        
+        default:
+            if (isDigit(c)) {
+                number();
+            } else if (isAlpha(c)) {
+                identifier();
+            } else {
+                Lua::error(line, "Unexpected character.");
             }
+            break;
+    }
+}
 
-            addToken(type);
-        }
+void Scanner::identifier() {
+    while (isAlphaNumeric(peek())) {
+        advance();
+    }
 
-        void number() {
-            while (isDigit(peek())) {
-                advance();
-            }
+    std::string text = source.substr(start, current - start);
+    TokenType type = IDENTIFIER;
+    if (keywords.find(text) != keywords.end()) {
+        type = keywords.at(text);
+    }
 
-            if (peek() == '.' && isDigit(peekNext())) {
-                advance();
-            }
+    addToken(type);
+}
 
-            while (isDigit(peek())) {
-                advance();
-            }
+void Scanner::number() {
+    while (isDigit(peek())) {
+        advance();
+    }
 
-            addToken(NUMBER, std::stold(source.substr(start, current - start).c_str()));
-        }
+    if (peek() == '.' && isDigit(peekNext())) {
+        advance();
+    }
 
-        void string() {
-            while (peek() != '"' && !isAtEnd()) {
-                if (peek() == '\n') line++;
-                advance();
-            }
+    while (isDigit(peek())) {
+        advance();
+    }
 
-            if (isAtEnd()) {
-                Lua::error(line, "Unterminated string.");
-                return;
-            }
+    addToken(NUMBER, std::stold(source.substr(start, current - start).c_str()));
+}
 
-            advance();
+void Scanner::string() {
+    while (peek() != '"' && !isAtEnd()) {
+        if (peek() == '\n') line++;
+        advance();
+    }
 
-            std::string value = source.substr(start, current - start);
-            addToken(STRING, value);
-        }
+    if (isAtEnd()) {
+        Lua::error(line, "Unterminated string.");
+        return;
+    }
 
-        bool match(char expected) {
-            if (isAtEnd()) {
-                return false;
-            }
-            if (source[current] != expected) {
-                return false;
-            }
+    advance();
 
-            current++;
-            return true;
-        }
+    std::string value = source.substr(start, current - start);
+    addToken(STRING, value);
+}
 
-        char peek() {
-            if (isAtEnd()) {
-                return '\0';
-            }
+bool Scanner::match(char expected) {
+    if (isAtEnd()) {
+        return false;
+    }
+    if (source[current] != expected) {
+        return false;
+    }
 
-            return source[current];
-        }
+    current++;
+    return true;
+}
 
-        char peekNext() {
-            if (current + 1 >= source.size()) {
-                return '\0';
-            }
+char Scanner::peek() {
+    if (isAtEnd()) {
+        return '\0';
+    }
 
-            return source[current + 1];
-        }
+    return source[current];
+}
 
-        bool isAlpha(char c) {
-            return (c >= 'a' && c <= 'z') ||
-                   (c >= 'A' && c <= 'z') ||
-                   (c == '_');
-        }
+char Scanner::peekNext() {
+    if (current + 1 >= source.size()) {
+        return '\0';
+    }
 
-        bool isAlphaNumeric(char c) {
-            return isAlpha(c) || isDigit(c);
-        }
+    return source[current + 1];
+}
 
-        bool isDigit(char c) {
-            return c >= '0' && c <= '9';
-        }
+bool Scanner::isAlpha(char c) {
+    return (c >= 'a' && c <= 'z') ||
+            (c >= 'A' && c <= 'z') ||
+            (c == '_');
+}
 
-        char advance() {
-            return source[current++];
-        }
+bool Scanner::isAlphaNumeric(char c) {
+    return isAlpha(c) || isDigit(c);
+}
 
-        void addToken(TokenType type) {
-            addToken(type, NULL);
-        }
+bool Scanner::isDigit(char c) {
+    return c >= '0' && c <= '9';
+}
 
-        void addToken(TokenType type, std::any literal) {
-            std::string text = source.substr(start, current - start);
-            tokens.push_back(Token(type, text, literal, line));
-        }
+char Scanner::advance() {
+    return source[current++];
+}
 
-    public:
-        Scanner(std::string source) {
-            this->source = source;
-        }
+void Scanner::addToken(TokenType type) {
+    addToken(type, NULL);
+}
 
-        std::vector<Token> scanTokens() {
-            while (!isAtEnd()) {
-                start = current;
-                scanToken();
-            }
+void Scanner::addToken(TokenType type, std::any literal) {
+    std::string text = source.substr(start, current - start);
+    tokens.push_back(Token(type, text, literal, line));
+}
 
-            return tokens;
-        }
-};
+Scanner::Scanner(std::string source) {
+    this->source = source;
+}
+
+std::vector<Token> Scanner::scanTokens() {
+    while (!isAtEnd()) {
+        start = current;
+        scanToken();
+    }
+
+    return tokens;
+}
 
 const std::unordered_map<std::string, TokenType> Scanner::keywords {
     {"and", AND},
