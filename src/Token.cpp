@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-#include "TokenType.cpp"
+#include "Token.hpp"
 
 class Token {
     TokenType type;
