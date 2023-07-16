@@ -1,9 +1,11 @@
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include "Scanner.hpp"
 
 class Scanner {
+    static const std::unordered_map<std::string, TokenType> keywords;
     std::string source;
     std::vector<Token> tokens;
     int start = 0;
@@ -84,11 +86,27 @@ class Scanner {
                 default:
                     if (isDigit(c)) {
                         number();
+                    } else if (isAlpha(c)) {
+                        identifier();
                     } else {
                         Lua::error(line, "Unexpected character.");
                     }
                     break;
             }
+        }
+
+        void identifier() {
+            while (isAlphaNumeric(peek())) {
+                advance();
+            }
+
+            std::string text = source.substr(start, current - start);
+            TokenType type = IDENTIFIER;
+            if (keywords.find(text) != keywords.end()) {
+                type = keywords.at(text);
+            }
+
+            addToken(type);
         }
 
         void number() {
@@ -104,7 +122,7 @@ class Scanner {
                 advance();
             }
 
-            addToken(NUMBER, std::stold(source.substr(start, current - start + 1).c_str()));
+            addToken(NUMBER, std::stold(source.substr(start, current - start).c_str()));
         }
 
         void string() {
@@ -120,7 +138,7 @@ class Scanner {
 
             advance();
 
-            std::string value = source.substr(start, current - start + 1);
+            std::string value = source.substr(start, current - start);
             addToken(STRING, value);
         }
 
@@ -152,6 +170,16 @@ class Scanner {
             return source[current + 1];
         }
 
+        bool isAlpha(char c) {
+            return (c >= 'a' && c <= 'z') ||
+                   (c >= 'A' && c <= 'z') ||
+                   (c == '_');
+        }
+
+        bool isAlphaNumeric(char c) {
+            return isAlpha(c) || isDigit(c);
+        }
+
         bool isDigit(char c) {
             return c >= '0' && c <= '9';
         }
@@ -165,7 +193,7 @@ class Scanner {
         }
 
         void addToken(TokenType type, std::any literal) {
-            std::string text = source.substr(start, current - start + 1);
+            std::string text = source.substr(start, current - start);
             tokens.push_back(Token(type, text, literal, line));
         }
 
@@ -182,4 +210,26 @@ class Scanner {
 
             return tokens;
         }
+};
+
+const std::unordered_map<std::string, TokenType> Scanner::keywords {
+    {"and", AND},
+    {"break", BREAK},
+    {"do", DO},
+    {"else", ELSE},
+    {"elseif", ELSEIF},
+    {"end", END},
+    {"false", FALSE},
+    {"for", FOR},
+    {"function", FUNCTION},
+    {"if", IF},
+    {"in", IN},
+    {"nil", NIL},
+    {"not", NOT},
+    {"or", OR},
+    {"repeat", REPEAT},
+    {"return", RETURN},
+    {"then", THEN},
+    {"until", UNTIL},
+    {"while", WHILE}
 };

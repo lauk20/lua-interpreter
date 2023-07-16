@@ -1,10 +1,13 @@
 #include <string>
 #include <vector>
+#include<unordered_map>
 
 #include "Token.hpp"
 
 /// Scanner class to read source code into tokens
 class Scanner {
+    /// @brief map of reserved identifiers
+    static const std::unordered_map<std::string, TokenType> keywords;
     /// @brief  source code string
     std::string source;
     /// @brief vector of tokens read from the source code
@@ -23,6 +26,9 @@ class Scanner {
 
         /// @brief function to scan the source code for the next token
         void scanToken();
+
+        /// @brief read identifiers
+        void identifier();
 
         /// @brief read numbers as long doubles, includes decimal numbers
         void number();
@@ -43,6 +49,16 @@ class Scanner {
         /// @brief get the character after the current position
         /// @return the character at the position after current position of source code. null if is the end
         char peekNext();
+
+        /// @brief determine whether a char is an alphabet
+        /// @param c the char to determine
+        /// @return true if is an alphabet, false otherwise
+        bool isAlpha(char c);
+
+        /// @brief determine whether a char is an alphabet or digit
+        /// @param c the char to determine
+        /// @return true if is an alphabet or digit, false otherwise
+        bool isAlphaNumeric(char c);
 
         /// @brief determine whether c is a digit
         /// @param c char to determine
