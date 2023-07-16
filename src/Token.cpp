@@ -18,7 +18,9 @@ class Token {
             this->line = line;
         }
 
-        std::ostream& operator<<(std::ostream &os) {
-            return os << type << " " << lexeme << std::endl;
-        }
+        friend std::ostream& operator<<(std::ostream &os, const Token& token);
 };
+
+std::ostream& operator<<(std::ostream& os, const Token& token) {
+    return os << token.type << " " << token.lexeme << " " << token.line << std::endl;
+}
