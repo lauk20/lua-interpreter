@@ -6,16 +6,16 @@
 
 /// Class to represent a Token
 class Token {
-    /// @brief Type of Token
-    TokenType type;
-    /// @brief The Token
-    std::string lexeme;
-    /// @brief literal value if applicable
-    std::any literal;
-    /// @brief the line where the token exists
-    int line;
-
     public:
+        /// @brief Type of Token
+        TokenType type;
+        /// @brief The Token
+        std::string lexeme;
+        /// @brief literal value if applicable
+        std::any literal;
+        /// @brief the line where the token exists
+        int line;
+
         /// @brief Token constructor
         /// @param type the token type
         /// @param lexeme the token string
