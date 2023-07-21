@@ -88,7 +88,7 @@ namespace {
     void defineType(std::ofstream& file, std::string& basename, std::string& classname, std::string fields) {
         // Class definition
         write(file, "template <class T>");
-        write(file, "class " + classname + " : public " + basename + "<T> {");
+        write(file, "class " + classname + " : public " + basename + "<T>, public std::enable_shared_from_this<" + classname + "<T>> {");
         
         std::vector<std::string> fieldTokens;
         tokenize(fields, ',', fieldTokens);
@@ -130,10 +130,23 @@ namespace {
         write(file, "#include <any>");
         write(file, "#include <vector>");
         write(file, "#include <memory>");
+        write(file, "#include <variant>");
         writeln(file);
         write(file, "#include \"Token.hpp\"");
         writeln(file);
         write(file, "using std::shared_ptr;");
+        write(file, "typedef std::variant<double, std::string> variantX;");
+        writeln(file);
+
+        // Declarations
+        for (std::string type : types) {
+            std::string classname = rtrim(split(type, ":"));
+            write(file, "template <class T>");
+            write(file, "class " + classname + ";");
+            writeln(file);
+        }
+        write(file, "template <class T>");
+        write(file, "class " + baseName + "Visitor;");
         writeln(file);
 
         // Expr class
@@ -141,7 +154,7 @@ namespace {
         write(file, "class " + baseName + " {");
         writeln(file);
         write(file, "    public:");
-        write(file, "        virtual T accept(Visitor<T> visitor) = 0;");
+        write(file, "        virtual T accept(shared_ptr<" + baseName +"Visitor<T>> visitor) = 0;");
         writeln(file);
         write(file, "};");
         writeln(file);
@@ -182,7 +195,7 @@ int main(int argc, char * argv[]) {
     defineAst(outputDir, "Expr", {
         "Binary   : shared_ptr<Expr<T>> left, Token op, shared_ptr<Expr<T>> right",
         "Grouping : shared_ptr<Expr<T>> expression",
-        "Literal  : T value",
+        "Literal  : variantX value",
         "Unary    : Token op, shared_ptr<Expr<T>> right"
     });
 
