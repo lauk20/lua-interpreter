@@ -4,8 +4,11 @@
 #include <string>
 #include <vector>
 
+#include "AstPrinter.hpp"
 #include "Lua.hpp"
+#include "Parser.hpp"
 #include "Scanner.hpp"
+#include "Token.hpp"
 
 bool hadError = false;
 
@@ -31,10 +34,15 @@ namespace Lua {
     void run(std::string source) {
         Scanner scanner(source);
         std::vector<Token> tokens = scanner.scanTokens();
-
-        for (Token token : tokens) {
-            std::cout << token;
+        Parser parser(tokens);
+        for (auto& t : tokens) {
+            std::cout << t << std::endl;
         }
+        shared_ptr<Expr> expression = parser.parse();
+
+        if (hadError) return;
+
+        AstPrinter().print(expression);
     }
 
     void error(int line, std::string message) {
@@ -44,6 +52,14 @@ namespace Lua {
     void report(int line, std::string where, std::string message) {
         std::cout << "[line " << line << "]" << "Error" << where << ": " << message << std::endl;
         hadError = true;
+    }
+
+    void error(Token token, std::string message) {
+        if (token.type == EOFILE) {
+            report(token.line, " at end", message);
+        } else {
+            report(token.line, " at '" + token.lexeme + "'", message);
+        }
     }
 }
 

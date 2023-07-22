@@ -1,5 +1,7 @@
 #include <string>
 
+#include "Token.hpp"
+
 namespace Lua {
     /// run Lua code from source code file after reading the file
     /// @param path The string path of the source code file
@@ -26,4 +28,9 @@ namespace Lua {
     /// @param where type of error
     /// @param message error message
     void report(int line, std::string where, std::string message);
+
+    /// report errors to print to stdout
+    /// @param token the error token
+    /// @param message the message of the error
+    void error(Token token, std::string message);
 }

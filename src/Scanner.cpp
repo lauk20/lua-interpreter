@@ -184,7 +184,7 @@ void Scanner::addToken(TokenType type) {
     addToken(type, NULL);
 }
 
-void Scanner::addToken(TokenType type, std::any literal) {
+void Scanner::addToken(TokenType type, std::variant<double, std::string> literal) {
     std::string text = source.substr(start, current - start);
     tokens.push_back(Token(type, text, literal, line));
 }
@@ -198,6 +198,8 @@ std::vector<Token> Scanner::scanTokens() {
         start = current;
         scanToken();
     }
+
+    tokens.push_back(Token(EOFILE, "", NULL, line));
 
     return tokens;
 }

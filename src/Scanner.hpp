@@ -76,7 +76,7 @@ class Scanner {
         /// @brief add token to the token vector
         /// @param type the TokenType to add
         /// @param literal the literal value of the token
-        void addToken(TokenType type, std::any literal);
+        void addToken(TokenType type, std::variant<double, std::string> literal);
 
     public:
         /// @brief constructor for Scanner class

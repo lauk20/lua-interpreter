@@ -1,6 +1,10 @@
+#ifndef Token_H
+#define Token_H
+
 #include <any>
 #include <iostream>
 #include <string>
+#include <variant>
 
 #include "TokenType.cpp"
 
@@ -12,7 +16,7 @@ class Token {
         /// @brief The Token
         std::string lexeme;
         /// @brief literal value if applicable
-        std::any literal;
+        std::variant<double, std::string> literal;
         /// @brief the line where the token exists
         int line;
 
@@ -21,7 +25,7 @@ class Token {
         /// @param lexeme the token string
         /// @param literal literal value of the token
         /// @param line line where the token exists
-        Token(TokenType type, std::string lexeme, std::any literal, int line);
+        Token(TokenType type, std::string lexeme, std::variant<double, std::string> literal, int line);
 
         /// @brief overloaded operator << for printing
         /// @param os the output stream
@@ -29,3 +33,5 @@ class Token {
         /// @return the provided output stream (os)
         friend std::ostream& operator<<(std::ostream &os, const Token& token);
 };
+
+#endif

@@ -4,7 +4,7 @@
 
 #include "Token.hpp"
 
-Token::Token(TokenType type, std::string lexeme, std::any literal, int line) {
+Token::Token(TokenType type, std::string lexeme, std::variant<double, std::string> literal, int line) {
     this->type = type;
     this->lexeme = lexeme;
     this->literal = literal;
