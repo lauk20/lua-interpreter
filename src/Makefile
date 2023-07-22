@@ -8,10 +8,10 @@ all: Lua.o Scanner.o Parser.o ParseError.o AstPrinter.o Expr.o
 Lua.o: Lua.cpp Lua.hpp Scanner.hpp Parser.hpp
 	$(CC) $(CFLAGS) -c Lua.cpp
 
-Scanner.o: Scanner.hpp Token.o
+Scanner.o: Scanner.cpp Scanner.hpp Token.o
 	$(CC) $(CFLAGS) -c Scanner.cpp
 
-Token.o: Token.hpp
+Token.o: Token.cpp Token.hpp
 	$(CC) $(CFLAGS) -c Token.cpp
 
 Parser.o: Parser.cpp Parser.hpp

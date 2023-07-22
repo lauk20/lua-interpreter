@@ -8,9 +8,7 @@ using std::shared_ptr;
 using std::make_shared;
 
 shared_ptr<Expr> Parser::expression() {
-    auto e = equality();
-    std::cout << "we are back" << std::endl;
-    return e;
+    return equality();
 }
 
 shared_ptr<Expr> Parser::equality() {
@@ -72,50 +70,37 @@ shared_ptr<Expr> Parser::unary() {
 }
 
 shared_ptr<Expr> Parser::primary() {
-    std::cout << "PRIMARY" << std::endl;
     if (match({FALSE})) return make_shared<Literal>(false);
     if (match({TRUE})) return make_shared<Literal>(true);
     if (match({NIL})) return make_shared<Literal>(0);
 
     if (match({NUMBER, STRING})) {
-        std::cout << "what is wrong" << std::endl;
-        std::cout << "number found" << std::endl;
         return make_shared<Literal>(previous().literal);
     }
-    std::cout << "ALADKFJDSKLGJ" << std::endl;
+
     if (match({LEFT_PAREN})) {
-        std::cout << "we got in here" << std::endl;
         auto expr = expression();
         consume(RIGHT_PAREN, "Expect ')' after expression.");
-        std::cout << "in left_paren" << std::endl;
         return make_shared<Grouping>(expr);
     }
 
-    std::cout << "LALALAAL" << std::endl;
     throw error(peek(), "Expect expression.");
 }
 
 bool Parser::match(std::vector<int> types) {
     for (int type : types) {
         if (check(type)) {
-            std::cout << "right be adv" << std::endl;
             advance();
-            std::cout << "did adv return" << std::endl;
             return true;
         }
     }
-
-    std::cout << "match END" << std::endl;
 
     return false;
 }
 
 Token Parser::consume(int type, std::string message) {
     if (check(type)) {
-        std::cout << "in consume" << std::endl;
-        auto e = advance();
-        std::cout << "ret of consume" << std::endl;
-        return e;
+        return advance();
     }
 
     throw error(peek(), message);
@@ -123,7 +108,6 @@ Token Parser::consume(int type, std::string message) {
 
 bool Parser::check(int type) {
     if (isAtEnd()) return false;
-    std::cout << "in check " << peek().type << std::endl;
     return peek().type == type;
 }
 
@@ -132,7 +116,6 @@ Token Parser::advance() {
         current++; 
     }
     
-    std::cout << "ret of advance" << std::endl;
     return previous();
 }
 
@@ -145,8 +128,6 @@ Token Parser::peek() {
 }
 
 Token Parser::previous() {
-    std::cout << "we got to prev" << std::endl;
-    std::cout << tokens[current - 1] << std::endl;
     return tokens[current - 1];
 }
 

@@ -35,9 +35,6 @@ namespace Lua {
         Scanner scanner(source);
         std::vector<Token> tokens = scanner.scanTokens();
         Parser parser(tokens);
-        for (auto& t : tokens) {
-            std::cout << t << std::endl;
-        }
         shared_ptr<Expr> expression = parser.parse();
 
         if (hadError) return;
