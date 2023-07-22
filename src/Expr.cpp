@@ -15,7 +15,6 @@ Binary::Binary(shared_ptr<Expr> left, Token op, shared_ptr<Expr> right) : op(op)
 }
 
 void Binary::accept(shared_ptr<ExprVisitor> visitor) {
-    std::cout << "BIN" << std::endl;
     return visitor->visitBinaryExpr(this->shared_from_this());
 }
 

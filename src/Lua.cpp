@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -9,6 +10,8 @@
 #include "Parser.hpp"
 #include "Scanner.hpp"
 #include "Token.hpp"
+
+using std::make_shared;
 
 bool hadError = false;
 
@@ -39,7 +42,7 @@ namespace Lua {
 
         if (hadError) return;
 
-        AstPrinter().print(expression);
+        make_shared<AstPrinter>()->print(expression);
     }
 
     void error(int line, std::string message) {

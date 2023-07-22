@@ -8,10 +8,13 @@ using std::shared_ptr;
 using std::make_shared;
 
 shared_ptr<Expr> Parser::expression() {
-    return equality();
+    auto e = equality();
+    //std::cout << "we are back" << std::endl;
+    return e;
 }
 
 shared_ptr<Expr> Parser::equality() {
+    //std::cout << "EQUALITY" << std::endl;
     auto expr = comparison();
     
     while (match({TILDE_EQUAL, EQUAL_EQUAL})) {
@@ -24,6 +27,7 @@ shared_ptr<Expr> Parser::equality() {
 }
 
 shared_ptr<Expr> Parser::comparison() {
+    //std::cout << "COMPARISON" << std::endl;
     auto expr = term();
 
     while (match({GREATER, GREATER_EQUAL, LESS, LESS_EQUAL})) {
@@ -36,6 +40,7 @@ shared_ptr<Expr> Parser::comparison() {
 }
 
 shared_ptr<Expr> Parser::term() {
+    //std::cout << "TERM" << std::endl;
     auto expr = factor();
 
     while (match({MINUS, PLUS})) {
@@ -48,6 +53,7 @@ shared_ptr<Expr> Parser::term() {
 }
 
 shared_ptr<Expr> Parser::factor() {
+    //std::cout << "FACTOR" << std::endl;
     auto expr = unary();
 
     while (match({SLASH, STAR})) {
@@ -60,6 +66,7 @@ shared_ptr<Expr> Parser::factor() {
 }
 
 shared_ptr<Expr> Parser::unary() {
+    //std::cout << "UNARY" << std::endl;
     if (match({TILDE, MINUS})) {
         Token op = previous();
         auto right = unary();
@@ -70,6 +77,7 @@ shared_ptr<Expr> Parser::unary() {
 }
 
 shared_ptr<Expr> Parser::primary() {
+    //std::cout << "PRIMARY" << std::endl;
     if (match({FALSE})) return make_shared<Literal>(false);
     if (match({TRUE})) return make_shared<Literal>(true);
     if (match({NIL})) return make_shared<Literal>(0);
@@ -100,7 +108,8 @@ bool Parser::match(std::vector<int> types) {
 
 Token Parser::consume(int type, std::string message) {
     if (check(type)) {
-        return advance();
+        auto e = advance();
+        return e;
     }
 
     throw error(peek(), message);
