@@ -5,47 +5,59 @@
 using std::shared_ptr;
 using std::string;
 
-class AstPrinter : public ExprVisitor<string>, public std::enable_shared_from_this<AstPrinter> {
+class AstPrinter : public ExprVisitor, public std::enable_shared_from_this<AstPrinter> {
+    string result;
+
     public:
-        string print(shared_ptr<Expr<string>> expr) {
-            return expr->accept(this->shared_from_this());
+        void print(shared_ptr<Expr> expr) {
+            expr->accept(this->shared_from_this());
+            std::cout << result << std::endl;
         }
 
-        string visitBinaryExpr(shared_ptr<Binary<string>> expr) {
-            return expr->op.lexeme + " " + expr->left->accept(shared_from_this()) + " " + expr->right->accept(shared_from_this());
+        void visitBinaryExpr(shared_ptr<Binary> expr) {
+            result += "(" + expr->op.lexeme + " ";
+            expr->left->accept(shared_from_this());
+            result += " ";
+            expr->right->accept(shared_from_this());
+            result += ")";
         }
 
-        string visitGroupingExpr(shared_ptr<Grouping<string>> expr) {
-            return "group " + expr->expression->accept(shared_from_this());
+        void visitGroupingExpr(shared_ptr<Grouping> expr) {
+            result += "(group "; 
+            expr->expression->accept(shared_from_this());
+            result += ")";
         }
 
-        string visitLiteralExpr(shared_ptr<Literal<string>> expr) {
+        void visitLiteralExpr(shared_ptr<Literal> expr) {
             if (expr->value.index() == 0) {
-                return std::to_string(std::get<0>(expr->value));
+                result += std::to_string(std::get<0>(expr->value));
+                return;
             }
 
-            return std::get<1>(expr->value);
+            result += std::get<1>(expr->value);
         }
 
-        string visitUnaryExpr(shared_ptr<Unary<string>> expr) {
-            return expr->op.lexeme + " " + expr->right->accept(shared_from_this());
+        void visitUnaryExpr(shared_ptr<Unary> expr) {
+            result += "(" + expr->op.lexeme + " "; 
+            expr->right->accept(shared_from_this());
+            result += ")";
         }
 };
 
 using std::make_shared;
 int main(void) {
-    shared_ptr<Expr<string>> expression = make_shared<Binary<string>>(
-        make_shared<Unary<string>>(
+    shared_ptr<Expr> expression = make_shared<Binary>(
+        make_shared<Unary>(
             Token(MINUS, "-", NULL, 1),
-            make_shared<Literal<string>>(123)
+            make_shared<Literal>(123)
         ),
         Token(STAR, "*", NULL, 1),
-        make_shared<Grouping<string>>(
-            make_shared<Literal<string>>(45.67)
+        make_shared<Grouping>(
+            make_shared<Literal>(45.67)
         )
     );
 
-    std::cout << "HERE" << std::endl;
+    make_shared<AstPrinter>()->print(expression);
 
-    std::cout << make_shared<AstPrinter>()->print(expression);
+    return 0;
 }
