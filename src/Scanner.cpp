@@ -222,6 +222,7 @@ const std::unordered_map<std::string, TokenType> Scanner::keywords {
     {"repeat", REPEAT},
     {"return", RETURN},
     {"then", THEN},
+    {"true", TRUE},
     {"until", UNTIL},
     {"while", WHILE}
 };
