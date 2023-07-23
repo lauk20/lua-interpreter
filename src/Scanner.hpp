@@ -4,6 +4,8 @@
 
 #include "Token.hpp"
 
+typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
+
 /// Scanner class to read source code into tokens
 class Scanner {
     /// @brief map of reserved identifiers
@@ -76,7 +78,7 @@ class Scanner {
         /// @brief add token to the token vector
         /// @param type the TokenType to add
         /// @param literal the literal value of the token
-        void addToken(TokenType type, std::variant<double, std::string> literal);
+        void addToken(TokenType type, variantX literal);
 
     public:
         /// @brief constructor for Scanner class

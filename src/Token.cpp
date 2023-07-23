@@ -3,8 +3,9 @@
 #include <string>
 
 #include "Token.hpp"
+typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
 
-Token::Token(TokenType type, std::string lexeme, std::variant<double, std::string> literal, int line) {
+Token::Token(TokenType type, std::string lexeme, variantX literal, int line) {
     this->type = type;
     this->lexeme = lexeme;
     this->literal = literal;

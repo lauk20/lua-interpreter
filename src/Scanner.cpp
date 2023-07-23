@@ -114,7 +114,7 @@ void Scanner::number() {
         advance();
     }
 
-    addToken(NUMBER, std::stold(source.substr(start, current - start).c_str()));
+    addToken(NUMBER, (double) std::stold(source.substr(start, current - start).c_str()));
 }
 
 void Scanner::string() {
@@ -181,10 +181,10 @@ char Scanner::advance() {
 }
 
 void Scanner::addToken(TokenType type) {
-    addToken(type, NULL);
+    addToken(type, nullptr);
 }
 
-void Scanner::addToken(TokenType type, std::variant<double, std::string> literal) {
+void Scanner::addToken(TokenType type, variantX literal) {
     std::string text = source.substr(start, current - start);
     tokens.push_back(Token(type, text, literal, line));
 }
@@ -199,7 +199,7 @@ std::vector<Token> Scanner::scanTokens() {
         scanToken();
     }
 
-    tokens.push_back(Token(EOFILE, "", NULL, line));
+    tokens.push_back(Token(EOFILE, "", nullptr, line));
 
     return tokens;
 }

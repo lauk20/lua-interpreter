@@ -8,7 +8,7 @@
 
 #include "Token.hpp"
 
-typedef std::variant<double, std::string> variantX;
+typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
 
 class Expr;
 class ExprVisitor;

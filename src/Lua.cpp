@@ -10,10 +10,12 @@
 #include "Parser.hpp"
 #include "Scanner.hpp"
 #include "Token.hpp"
+#include "Interpreter.cpp"
 
 using std::make_shared;
 
 bool hadError = false;
+shared_ptr<Interpreter> interpreter = make_shared<Interpreter>();
 
 namespace Lua {
     void runFile(std::string path) {
@@ -39,10 +41,11 @@ namespace Lua {
         std::vector<Token> tokens = scanner.scanTokens();
         Parser parser(tokens);
         shared_ptr<Expr> expression = parser.parse();
+        interpreter->interpret(expression);
 
         if (hadError) return;
 
-        make_shared<AstPrinter>()->print(expression);
+        //make_shared<AstPrinter>()->print(expression);
     }
 
     void error(int line, std::string message) {

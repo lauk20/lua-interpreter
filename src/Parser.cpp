@@ -80,7 +80,7 @@ shared_ptr<Expr> Parser::primary() {
     //std::cout << "PRIMARY" << std::endl;
     if (match({FALSE})) return make_shared<Literal>(false);
     if (match({TRUE})) return make_shared<Literal>(true);
-    if (match({NIL})) return make_shared<Literal>(0);
+    if (match({NIL})) return make_shared<Literal>(nullptr);
 
     if (match({NUMBER, STRING})) {
         return make_shared<Literal>(previous().literal);

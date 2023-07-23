@@ -8,6 +8,8 @@
 
 #include "TokenType.cpp"
 
+typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
+
 /// Class to represent a Token
 class Token {
     public:
@@ -16,7 +18,7 @@ class Token {
         /// @brief The Token
         std::string lexeme;
         /// @brief literal value if applicable
-        std::variant<double, std::string> literal;
+        variantX literal;
         /// @brief the line where the token exists
         int line;
 
@@ -25,7 +27,7 @@ class Token {
         /// @param lexeme the token string
         /// @param literal literal value of the token
         /// @param line line where the token exists
-        Token(TokenType type, std::string lexeme, std::variant<double, std::string> literal, int line);
+        Token(TokenType type, std::string lexeme, variantX literal, int line);
 
         /// @brief overloaded operator << for printing
         /// @param os the output stream

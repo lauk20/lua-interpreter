@@ -5,7 +5,7 @@ CFLAGS = -std=c++17
 all: Lua.o Scanner.o Parser.o ParseError.o AstPrinter.o Expr.o
 	$(CC) $(CFLAGS) -o Lua Lua.o Scanner.o Token.o Parser.o ParseError.o AstPrinter.o Expr.o
 
-Lua.o: Lua.cpp Lua.hpp Scanner.hpp Parser.hpp
+Lua.o: Lua.cpp Lua.hpp Scanner.hpp Parser.hpp Interpreter.cpp
 	$(CC) $(CFLAGS) -c Lua.cpp
 
 Scanner.o: Scanner.cpp Scanner.hpp Token.o
