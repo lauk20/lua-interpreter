@@ -74,8 +74,6 @@ class Interpreter : public ExprVisitor, public std::enable_shared_from_this<Inte
             evaluate(expr->right);
             variantX right = result;
 
-            std::cout << "op type" << expr->op.type << std::endl;
-
             switch (expr->op.type) {
                 case MINUS:
                     result = (double) (std::get<double>(left) - std::get<double>(right));
@@ -90,7 +88,6 @@ class Interpreter : public ExprVisitor, public std::enable_shared_from_this<Inte
                     result = (double) (std::get<double>(left) + std::get<double>(right));
                     break;
                 case GREATER:
-                    std::cout << "here greater" << std::endl;
                     result = (bool) (std::get<double>(left) > std::get<double>(right));
                     break;
                 case GREATER_EQUAL:
