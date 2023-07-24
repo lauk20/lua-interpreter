@@ -8,6 +8,7 @@
 #include "AstPrinter.hpp"
 #include "Lua.hpp"
 #include "Parser.hpp"
+#include "RuntimeError.hpp"
 #include "Scanner.hpp"
 #include "Token.hpp"
 #include "Interpreter.cpp"
@@ -15,6 +16,7 @@
 using std::make_shared;
 
 bool hadError = false;
+bool hadRuntimeError = false;
 shared_ptr<Interpreter> interpreter = make_shared<Interpreter>();
 
 namespace Lua {
@@ -44,12 +46,17 @@ namespace Lua {
         interpreter->interpret(expression);
 
         if (hadError) return;
+        if (hadRuntimeError) return;
 
         //make_shared<AstPrinter>()->print(expression);
     }
 
     void error(int line, std::string message) {
         report(line, "", message);
+    }
+
+    void runtimeError(RuntimeError error) {
+        std::cout << error.what() << std::endl;
     }
 
     void report(int line, std::string where, std::string message) {

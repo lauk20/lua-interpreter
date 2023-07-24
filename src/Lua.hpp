@@ -1,6 +1,7 @@
 #include <string>
 
 #include "Token.hpp"
+#include "RuntimeError.hpp"
 
 namespace Lua {
     /// run Lua code from source code file after reading the file
@@ -33,4 +34,6 @@ namespace Lua {
     /// @param token the error token
     /// @param message the message of the error
     void error(Token token, std::string message);
+
+    void runtimeError(RuntimeError error);
 }
