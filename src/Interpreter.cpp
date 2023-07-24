@@ -2,10 +2,7 @@
 #include <string>
 #include <stdexcept>
 
-#include "Expr.hpp"
 #include "Interpreter.hpp"
-#include "Lua.hpp"
-#include "RuntimeError.hpp"
 
 using std::shared_ptr;
 typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
