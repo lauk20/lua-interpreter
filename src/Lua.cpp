@@ -11,7 +11,7 @@
 #include "RuntimeError.hpp"
 #include "Scanner.hpp"
 #include "Token.hpp"
-#include "Interpreter.cpp"
+#include "Interpreter.hpp"
 
 using std::make_shared;
 
