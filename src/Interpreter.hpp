@@ -5,11 +5,12 @@
 #include "Expr.hpp"
 #include "Lua.hpp"
 #include "RuntimeError.hpp"
+#include "Stmt.hpp"
 
 using std::shared_ptr;
 typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
 
-class Interpreter : public ExprVisitor, public std::enable_shared_from_this<Interpreter> {
+class Interpreter : public ExprVisitor, public StmtVisitor, public std::enable_shared_from_this<Interpreter> {
     variantX result;
 
     std::string stringify();
@@ -31,7 +32,11 @@ class Interpreter : public ExprVisitor, public std::enable_shared_from_this<Inte
 
         void evaluate(shared_ptr<Expr> expr);
 
+        void execute(shared_ptr<Stmt> stmt);
+
+        void visitExpressionStmt(shared_ptr<Expression> stmt);
+
         void visitBinaryExpr(shared_ptr<Binary> expr);
 
-        void interpret(shared_ptr<Expr> expression);
+        void interpret(std::vector<shared_ptr<Stmt>> expression);
 };

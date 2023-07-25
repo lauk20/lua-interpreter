@@ -79,6 +79,16 @@ void Interpreter::evaluate(shared_ptr<Expr> expr) {
     expr->accept(this->shared_from_this());
 }
 
+void Interpreter::execute(shared_ptr<Stmt> stmt) {
+    stmt->accept(shared_from_this());
+}
+
+void Interpreter::visitExpressionStmt(shared_ptr<Expression> stmt) {
+    evaluate(stmt->expression);
+    // we will temporarily print the output
+    std::cout << stringify() << std::endl;
+}
+
 void Interpreter::visitBinaryExpr(shared_ptr<Binary> expr) {
     evaluate(expr->left);
     variantX left = result;
@@ -127,11 +137,11 @@ void Interpreter::visitBinaryExpr(shared_ptr<Binary> expr) {
     }
 }
 
-void Interpreter::interpret(shared_ptr<Expr> expression) {
+void Interpreter::interpret(std::vector<shared_ptr<Stmt>> statements) {
     try {
-        evaluate(expression);
-        std::cout << stringify() << std::endl;
-
+        for (shared_ptr<Stmt> statement : statements) {
+            execute(statement);
+        }
     } catch (RuntimeError error) {
         Lua::runtimeError(error);
     }

@@ -42,10 +42,12 @@ namespace Lua {
         Scanner scanner(source);
         std::vector<Token> tokens = scanner.scanTokens();
         Parser parser(tokens);
-        shared_ptr<Expr> expression = parser.parse();
-        interpreter->interpret(expression);
+        std::vector<shared_ptr<Stmt>> statements = parser.parse();
 
         if (hadError) return;
+
+        interpreter->interpret(statements);
+        
         if (hadRuntimeError) return;
 
         //make_shared<AstPrinter>()->print(expression);

@@ -12,6 +12,15 @@ shared_ptr<Expr> Parser::expression() {
     return e;
 }
 
+shared_ptr<Stmt> Parser::statement() {
+    return expressionStatement();
+}
+
+shared_ptr<Stmt> Parser::expressionStatement() {
+    shared_ptr<Expr> expr = expression();
+    return make_shared<Expression>(expr);
+}
+
 shared_ptr<Expr> Parser::equality() {
     //std::cout << "EQUALITY" << std::endl;
     auto expr = comparison();
@@ -167,10 +176,12 @@ Parser::Parser(std::vector<Token> tokens) {
     this->tokens = tokens;
 }
 
-shared_ptr<Expr> Parser::parse() {
-    try {
-        return expression();
-    } catch (ParseError error) {
-        return NULL;
+std::vector<shared_ptr<Stmt>> Parser::parse() {
+    std::vector<shared_ptr<Stmt>> statements;
+
+    while (!isAtEnd()) {
+        statements.push_back(statement());
     }
+
+    return statements;
 }
