@@ -2,8 +2,8 @@ CC = g++
 
 CFLAGS = -std=c++17
 
-all: Lua.o Scanner.o Parser.o ParseError.o AstPrinter.o Expr.o RuntimeError.o Interpreter.o Stmt.o
-	$(CC) $(CFLAGS) -o Lua Lua.o Scanner.o Token.o Parser.o ParseError.o AstPrinter.o Expr.o RuntimeError.o Interpreter.o Stmt.o
+all: Lua.o Scanner.o Parser.o ParseError.o AstPrinter.o Expr.o RuntimeError.o Interpreter.o Stmt.o Environment.o
+	$(CC) $(CFLAGS) -o Lua Lua.o Scanner.o Token.o Parser.o ParseError.o AstPrinter.o Expr.o RuntimeError.o Interpreter.o Stmt.o Environment.o
 
 Lua.o: Lua.cpp Lua.hpp Scanner.hpp Parser.hpp Interpreter.hpp RuntimeError.hpp
 	$(CC) $(CFLAGS) -c Lua.cpp
@@ -34,3 +34,6 @@ Interpreter.o: Interpreter.cpp Interpreter.hpp
 
 Stmt.o: Stmt.cpp Stmt.hpp
 	$(CC) $(CFLAGS) -c Stmt.cpp
+
+Environment.o: Environment.cpp Environment.hpp
+	$(CC) $(CFLAGS) -c Environment.cpp

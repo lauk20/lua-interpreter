@@ -58,6 +58,10 @@ void Interpreter::visitUnaryExpr(shared_ptr<Unary> expr) {
     }
 }
 
+void Interpreter::visitVariableExpr(shared_ptr<Variable> expr) {
+    result = environment.get(expr->name);
+}
+
 void Interpreter::checkNumberOperand(Token op, variantX operand) {
     if (std::holds_alternative<double>(operand)) return;
     throw RuntimeError(op, "Operand must be a number.");
@@ -87,6 +91,11 @@ void Interpreter::visitExpressionStmt(shared_ptr<Expression> stmt) {
     evaluate(stmt->expression);
     // we will temporarily print the output
     std::cout << stringify() << std::endl;
+}
+
+void Interpreter::visitAssignExpr(shared_ptr<Assign> expr) {
+    evaluate(expr->value);
+    environment.define(expr->name.lexeme, result);
 }
 
 void Interpreter::visitBinaryExpr(shared_ptr<Binary> expr) {

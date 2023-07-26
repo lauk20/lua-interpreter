@@ -47,7 +47,7 @@ namespace Lua {
         if (hadError) return;
 
         interpreter->interpret(statements);
-        
+
         if (hadRuntimeError) return;
 
         //make_shared<AstPrinter>()->print(expression);
@@ -62,7 +62,7 @@ namespace Lua {
     }
 
     void report(int line, std::string where, std::string message) {
-        std::cout << "[line " << line << "]" << "Error" << where << ": " << message << std::endl;
+        std::cout << "[line " << line << "] " << "Error" << where << ": " << message << std::endl;
         hadError = true;
     }
 

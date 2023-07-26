@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "Lua.hpp"
-#include "ParseError.cpp"
+#include "ParseError.hpp"
 #include "Expr.hpp"
 #include "Stmt.hpp"
 #include "Token.hpp"
@@ -15,9 +15,13 @@ class Parser {
 
     shared_ptr<Expr> expression();
 
+    shared_ptr<Stmt> declaration();
+
     shared_ptr<Stmt> statement();
 
     shared_ptr<Stmt> expressionStatement();
+
+    shared_ptr<Expr> assignment();
 
     shared_ptr<Expr> equality();
 

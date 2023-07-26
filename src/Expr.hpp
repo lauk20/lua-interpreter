@@ -6,30 +6,45 @@
 #include <memory>
 #include <variant>
 
+#include "ParseError.hpp"
 #include "Token.hpp"
 
 typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
 
 class Expr;
 class ExprVisitor;
+class Assign;
 class Binary;
 class Grouping;
 class Literal;
 class Unary;
+class Variable;
 
 class Expr {
 
     public:
         virtual void accept(std::shared_ptr<ExprVisitor> visitor) = 0;
-
+        virtual std::shared_ptr<Expr> make_assignment(Token name, std::shared_ptr<Expr> value, Token equal, std::string errMessage);
 };
 
 class ExprVisitor {
     public:
+        virtual void visitAssignExpr(std::shared_ptr<Assign> expr) = 0;
         virtual void visitBinaryExpr(std::shared_ptr<Binary> expr) = 0;
         virtual void visitGroupingExpr(std::shared_ptr<Grouping> expr) = 0;
         virtual void visitLiteralExpr(std::shared_ptr<Literal> expr) = 0;
         virtual void visitUnaryExpr(std::shared_ptr<Unary> expr) = 0;
+        virtual void visitVariableExpr(std::shared_ptr<Variable> expr) = 0;
+};
+
+class Assign : public Expr, public std::enable_shared_from_this<Assign> {
+    public:
+        Token name;
+        std::shared_ptr<Expr> value;
+
+        Assign(Token name, std::shared_ptr<Expr> value);
+
+        void accept(std::shared_ptr<ExprVisitor> visitor);
 };
 
 class Binary : public Expr, public std::enable_shared_from_this<Binary> {
@@ -71,6 +86,17 @@ class Unary : public Expr, public std::enable_shared_from_this<Unary> {
         Unary(Token op, std::shared_ptr<Expr> right);
 
         void accept(std::shared_ptr<ExprVisitor> visitor);
+};
+
+class Variable : public Expr, public std::enable_shared_from_this<Variable> {
+    public:
+        Token name;
+
+        Variable(Token name);
+
+        void accept(std::shared_ptr<ExprVisitor> visitor);
+
+        std::shared_ptr<Expr> make_assignment(Token name, std::shared_ptr<Expr> value, Token equal, std::string errMessage);
 };
 
 #endif

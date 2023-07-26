@@ -2,8 +2,6 @@
 #include <memory>
 #include <vector>
 
-using std::shared_ptr;
+#include "ParseError.hpp"
 
-class ParseError : std::exception {
-    
-};
+ParseError::ParseError() {}

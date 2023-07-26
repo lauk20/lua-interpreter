@@ -3,9 +3,25 @@
 #include <memory>
 #include <variant>
 
+#include "ParseError.hpp"
 #include "Expr.hpp"
+#include "Lua.hpp"
 
 using std::shared_ptr;
+
+shared_ptr<Expr> Expr::make_assignment(Token varName, shared_ptr<Expr> value, Token equal, std::string errMessage) {
+    Lua::error(equal, errMessage);
+    throw ParseError();
+    return std::make_shared<Assign>(varName, value);
+}
+
+Assign::Assign(Token name, shared_ptr<Expr> value) : name(name), value(value) {
+
+}
+
+void Assign::accept(shared_ptr<ExprVisitor> visitor) {
+    return visitor->visitAssignExpr(this->shared_from_this());
+}
 
 Binary::Binary(shared_ptr<Expr> left, Token op, shared_ptr<Expr> right) : op(op) {
     this->left = left;
@@ -42,4 +58,16 @@ Unary::Unary(Token op, shared_ptr<Expr> right) : op(op) {
 
 void Unary::accept(shared_ptr<ExprVisitor> visitor) {
     return visitor->visitUnaryExpr(this->shared_from_this());
+}
+
+Variable::Variable(Token name) : name(name) {
+
+}
+
+void Variable::accept(shared_ptr<ExprVisitor> visitor) {
+    return visitor->visitVariableExpr(this->shared_from_this());
+}
+
+shared_ptr<Expr> Variable::make_assignment(Token name, shared_ptr<Expr> value, Token equal, std::string errMessage) {
+    return std::make_shared<Assign>(name, value);
 }

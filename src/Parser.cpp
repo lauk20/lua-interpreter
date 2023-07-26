@@ -7,10 +7,23 @@ using std::shared_ptr;
 using std::make_shared;
 
 shared_ptr<Expr> Parser::expression() {
-    auto e = equality();
+    auto e = assignment();
     //std::cout << "we are back" << std::endl;
     return e;
 }
+
+/*
+shared_ptr<Stmt> Parser::declaration() {
+    try {
+        if (match({IDENTIFIER})) return varDeclaration();
+
+        return statement();
+    } catch (ParseError error) {
+        synchronize();
+        return nullptr;
+    }
+}
+*/
 
 shared_ptr<Stmt> Parser::statement() {
     return expressionStatement();
@@ -19,6 +32,18 @@ shared_ptr<Stmt> Parser::statement() {
 shared_ptr<Stmt> Parser::expressionStatement() {
     shared_ptr<Expr> expr = expression();
     return make_shared<Expression>(expr);
+}
+
+shared_ptr<Expr> Parser::assignment() {
+    shared_ptr<Expr> expr = equality();
+
+    if (match({EQUAL})) {
+        shared_ptr<Expr> value = assignment();
+
+        return expr->make_assignment(std::static_pointer_cast<Variable>(expr)->name, value, previous(), "Invalid assignment target.");
+    }
+
+    return expr;
 }
 
 shared_ptr<Expr> Parser::equality() {
@@ -92,6 +117,10 @@ shared_ptr<Expr> Parser::primary() {
 
     if (match({NUMBER, STRING})) {
         return make_shared<Literal>(previous().literal);
+    }
+
+    if (match({IDENTIFIER})) {
+        return make_shared<Variable>(previous());
     }
 
     if (match({LEFT_PAREN})) {

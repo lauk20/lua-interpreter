@@ -1,5 +1,6 @@
 #include "Environment.hpp"
 #include "RuntimeError.hpp"
+#include <iostream>
 
 void Environment::define(std::string name, variantX value) {
     values[name] = value;

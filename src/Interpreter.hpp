@@ -2,6 +2,7 @@
 #include <string>
 #include <stdexcept>
 
+#include "Environment.hpp"
 #include "Expr.hpp"
 #include "Lua.hpp"
 #include "RuntimeError.hpp"
@@ -12,6 +13,8 @@ typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
 
 class Interpreter : public ExprVisitor, public StmtVisitor, public std::enable_shared_from_this<Interpreter> {
     variantX result;
+
+    Environment environment;
 
     std::string stringify();
 
@@ -24,6 +27,8 @@ class Interpreter : public ExprVisitor, public StmtVisitor, public std::enable_s
 
         void visitUnaryExpr(shared_ptr<Unary> expr);
 
+        void visitVariableExpr(shared_ptr<Variable> expr);
+
         void checkNumberOperand(Token op, variantX operand);
 
         void checkNumberOperands(Token op, variantX left, variantX right);
@@ -35,6 +40,8 @@ class Interpreter : public ExprVisitor, public StmtVisitor, public std::enable_s
         void execute(shared_ptr<Stmt> stmt);
 
         void visitExpressionStmt(shared_ptr<Expression> stmt);
+
+        void visitAssignExpr(shared_ptr<Assign> expr);
 
         void visitBinaryExpr(shared_ptr<Binary> expr);
 

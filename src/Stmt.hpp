@@ -35,4 +35,16 @@ class Expression : public Stmt, public std::enable_shared_from_this<Expression> 
         void accept(std::shared_ptr<StmtVisitor> visitor);
 };
 
+/*
+class Var : public Stmt, public std::enable_shared_from_this<Var> {
+    public:
+        Token name;
+        std::shared_ptr<Expr> initializer;
+
+        Var(Token name, std::shared_ptr<Expr> initializer);
+
+        void accept(std::shared_ptr<StmtVisitor> visitor);
+};
+*/
+
 #endif
