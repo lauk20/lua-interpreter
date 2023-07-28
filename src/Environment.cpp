@@ -11,5 +11,5 @@ variantX Environment::get(Token name) {
         return values[name.lexeme];
     }
 
-    throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
+    throw RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
 }

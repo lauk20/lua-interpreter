@@ -57,7 +57,7 @@ namespace Lua {
         report(line, "", message);
     }
 
-    void runtimeError(RuntimeError error) {
+    void runtimeError(RuntimeError& error) {
         std::cout << error.what() << std::endl;
     }
 

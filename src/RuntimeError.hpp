@@ -9,9 +9,9 @@
 class RuntimeError : public std::exception {
     public:
         Token token;
-        std::string_view message;
+        std::string message;
 
-        RuntimeError(Token token, std::string_view message);
+        RuntimeError(Token token, std::string message);
         const char * what();
 };
 

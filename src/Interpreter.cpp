@@ -151,7 +151,7 @@ void Interpreter::interpret(std::vector<shared_ptr<Stmt>> statements) {
         for (shared_ptr<Stmt> statement : statements) {
             execute(statement);
         }
-    } catch (RuntimeError error) {
-        Lua::runtimeError(error);
+    } catch (RuntimeError& err) {
+        Lua::runtimeError(err);
     }
 }

@@ -35,5 +35,5 @@ namespace Lua {
     /// @param message the message of the error
     void error(Token token, std::string message);
 
-    void runtimeError(RuntimeError error);
+    void runtimeError(RuntimeError& error);
 }
