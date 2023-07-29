@@ -50,6 +50,9 @@ void Scanner::scanToken() {
         case '*':
             addToken(STAR);
             break;
+        case '/':
+            addToken(SLASH);
+            break;
         case '~':
             addToken(match('=') ? TILDE_EQUAL : TILDE);
             break;
