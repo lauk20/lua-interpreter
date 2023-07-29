@@ -39,7 +39,7 @@ shared_ptr<Stmt> Parser::elseifStatement() {
     shared_ptr<Expr> condition = expression();
     consume(THEN, "Expect 'then' after if condition.");
 
-    shared_ptr<Stmt> thenBranch = statement();
+    shared_ptr<Stmt> thenBranch = block();
     std::vector<shared_ptr<Stmt>> elseifBranches;
     shared_ptr<Stmt> elseBranch = nullptr;
 
@@ -50,14 +50,14 @@ shared_ptr<Stmt> Parser::ifStatement() {
     shared_ptr<Expr> condition = expression();
     consume(THEN, "Expect 'then' after if condition.");
 
-    shared_ptr<Stmt> thenBranch = statement();
+    shared_ptr<Stmt> thenBranch = block();
     std::vector<shared_ptr<Stmt>> elseifBranches;
     while (match({ELSEIF}) && !isAtEnd()) {
         elseifBranches.push_back(elseifStatement());
     }
     shared_ptr<Stmt> elseBranch = nullptr;
     if (match({ELSE})) {
-        elseBranch = statement();
+        elseBranch = block();
     }
 
     consume(END, "Expect 'end' after conditional block.");
@@ -73,7 +73,7 @@ shared_ptr<Stmt> Parser::expressionStatement() {
 shared_ptr<Stmt> Parser::block() {
     std::vector<shared_ptr<Stmt>> statements;
 
-    while (!check(RETURN) && !check(END) && !isAtEnd()) {
+    while (!check(RETURN) && !check(END) && !check(ELSEIF) && !check(ELSE) && !isAtEnd()) {
         statements.push_back(statement());
     }
 
