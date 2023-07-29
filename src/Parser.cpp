@@ -27,6 +27,7 @@ shared_ptr<Stmt> Parser::declaration() {
 
 shared_ptr<Stmt> Parser::statement() {
     try {
+        if (match({IF})) return ifStatement();
         return expressionStatement();
     } catch (ParseError error) {
         synchronize();
@@ -34,19 +35,49 @@ shared_ptr<Stmt> Parser::statement() {
     }
 }
 
+shared_ptr<Stmt> Parser::elseifStatement() {
+    shared_ptr<Expr> condition = expression();
+    consume(THEN, "Expect 'then' after if condition.");
+
+    shared_ptr<Stmt> thenBranch = statement();
+    std::vector<shared_ptr<Stmt>> elseifBranches;
+    shared_ptr<Stmt> elseBranch = nullptr;
+
+    return make_shared<If>(condition, thenBranch, elseifBranches, elseBranch);
+}
+
+shared_ptr<Stmt> Parser::ifStatement() {
+    shared_ptr<Expr> condition = expression();
+    consume(THEN, "Expect 'then' after if condition.");
+
+    shared_ptr<Stmt> thenBranch = statement();
+    std::vector<shared_ptr<Stmt>> elseifBranches;
+    while (match({ELSEIF}) && !isAtEnd()) {
+        elseifBranches.push_back(elseifStatement());
+    }
+    shared_ptr<Stmt> elseBranch = nullptr;
+    if (match({ELSE})) {
+        elseBranch = statement();
+    }
+
+    consume(END, "Expect 'end' after conditional block.");
+
+    return make_shared<If>(condition, thenBranch, elseifBranches, elseBranch);
+}
+
 shared_ptr<Stmt> Parser::expressionStatement() {
     shared_ptr<Expr> expr = expression();
     return make_shared<Expression>(expr);
 }
 
-std::vector<shared_ptr<Stmt>> Parser::block() {
+shared_ptr<Stmt> Parser::block() {
     std::vector<shared_ptr<Stmt>> statements;
 
-    while (!check(RETURN) && !isAtEnd()) {
+    while (!check(RETURN) && !check(END) && !isAtEnd()) {
         statements.push_back(statement());
     }
 
-    return statements;
+    return make_shared<Block>(statements);
 }
 
 shared_ptr<Expr> Parser::assignment() {
@@ -221,7 +252,7 @@ Parser::Parser(std::vector<Token> tokens) {
 }
 
 std::vector<shared_ptr<Stmt>> Parser::parse() {
-    std::vector<shared_ptr<Stmt>> statements = block();
+    std::vector<shared_ptr<Stmt>> statements = std::static_pointer_cast<Block>(block())->statements;
 
     return statements;
 }

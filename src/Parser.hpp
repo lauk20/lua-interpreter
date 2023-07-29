@@ -19,9 +19,13 @@ class Parser {
 
     shared_ptr<Stmt> statement();
 
+    shared_ptr<Stmt> elseifStatement();
+
+    shared_ptr<Stmt> ifStatement();
+
     shared_ptr<Stmt> expressionStatement();
 
-    std::vector<shared_ptr<Stmt>> block();
+    shared_ptr<Stmt> block();
 
     shared_ptr<Expr> assignment();
 

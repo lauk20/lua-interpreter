@@ -47,6 +47,8 @@ class Interpreter : public ExprVisitor, public StmtVisitor, public std::enable_s
 
         void visitExpressionStmt(shared_ptr<Expression> stmt);
 
+        void visitIfStmt(shared_ptr<If> stmt);
+
         void visitAssignExpr(shared_ptr<Assign> expr);
 
         void visitBinaryExpr(shared_ptr<Binary> expr);

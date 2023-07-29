@@ -116,6 +116,24 @@ void Interpreter::visitExpressionStmt(shared_ptr<Expression> stmt) {
     std::cout << stringify() << std::endl;
 }
 
+void Interpreter::visitIfStmt(shared_ptr<If> stmt) {
+    evaluate(stmt->condition);
+    if (isTruthy(result)) {
+        execute(stmt->thenBranch);
+    } else if (stmt->elseifBranches.size() != 0) {
+        for (auto e : stmt->elseifBranches) {
+            shared_ptr<If> element = std::static_pointer_cast<If>(e);
+            evaluate(element->condition);
+            if (isTruthy(result)) {
+                execute(element->thenBranch);
+                break;
+            }
+        }
+    } else if (stmt->elseBranch != nullptr) {
+        execute(stmt->elseBranch);
+    }
+}
+
 void Interpreter::visitAssignExpr(shared_ptr<Assign> expr) {
     evaluate(expr->value);
     environment->define(expr->name.lexeme, result);
