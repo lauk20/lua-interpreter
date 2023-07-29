@@ -7,6 +7,9 @@
 using std::shared_ptr;
 typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
 
+
+Interpreter::Interpreter(shared_ptr<Environment> environment) : environment(environment) { }
+
 std::string Interpreter::stringify() {
     if (std::holds_alternative<double>(result)) {
         return std::to_string(std::get<double>(result));
@@ -59,7 +62,7 @@ void Interpreter::visitUnaryExpr(shared_ptr<Unary> expr) {
 }
 
 void Interpreter::visitVariableExpr(shared_ptr<Variable> expr) {
-    result = environment.get(expr->name);
+    result = environment->get(expr->name);
 }
 
 void Interpreter::checkNumberOperand(Token op, variantX operand) {
@@ -87,6 +90,26 @@ void Interpreter::execute(shared_ptr<Stmt> stmt) {
     stmt->accept(shared_from_this());
 }
 
+void Interpreter::executeBlock(std::vector<shared_ptr<Stmt>> statements, shared_ptr<Environment> env) {
+    auto pre = environment;
+
+    try {
+        environment = env;
+
+        for (shared_ptr<Stmt> statement : statements) {
+            execute(statement);
+        }
+    } catch(...) {
+        
+    }
+
+    this->environment = pre;
+}
+
+void Interpreter::visitBlockStmt(shared_ptr<Block> stmt) {
+    executeBlock(stmt->statements, environment);
+}
+
 void Interpreter::visitExpressionStmt(shared_ptr<Expression> stmt) {
     evaluate(stmt->expression);
     // we will temporarily print the output
@@ -95,7 +118,7 @@ void Interpreter::visitExpressionStmt(shared_ptr<Expression> stmt) {
 
 void Interpreter::visitAssignExpr(shared_ptr<Assign> expr) {
     evaluate(expr->value);
-    environment.define(expr->name.lexeme, result);
+    environment->define(expr->name.lexeme, result);
 }
 
 void Interpreter::visitBinaryExpr(shared_ptr<Binary> expr) {

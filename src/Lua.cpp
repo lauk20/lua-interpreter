@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "AstPrinter.hpp"
+#include "Environment.hpp"
 #include "Lua.hpp"
 #include "Parser.hpp"
 #include "RuntimeError.hpp"
@@ -17,7 +18,8 @@ using std::make_shared;
 
 bool hadError = false;
 bool hadRuntimeError = false;
-shared_ptr<Interpreter> interpreter = make_shared<Interpreter>();
+shared_ptr<Environment> globalEnv = make_shared<Environment>();
+shared_ptr<Interpreter> interpreter = make_shared<Interpreter>(globalEnv);
 
 namespace Lua {
     void runFile(std::string path) {

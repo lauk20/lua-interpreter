@@ -14,7 +14,7 @@ typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
 class Interpreter : public ExprVisitor, public StmtVisitor, public std::enable_shared_from_this<Interpreter> {
     variantX result;
 
-    Environment environment;
+    std::shared_ptr<Environment> environment;
 
     std::string stringify();
 
@@ -23,6 +23,8 @@ class Interpreter : public ExprVisitor, public StmtVisitor, public std::enable_s
     bool isEqual(variantX left, variantX right);
 
     public:
+        Interpreter(shared_ptr<Environment> environment);
+
         void visitLiteralExpr(shared_ptr<Literal> expr);
 
         void visitUnaryExpr(shared_ptr<Unary> expr);
@@ -38,6 +40,10 @@ class Interpreter : public ExprVisitor, public StmtVisitor, public std::enable_s
         void evaluate(shared_ptr<Expr> expr);
 
         void execute(shared_ptr<Stmt> stmt);
+
+        void executeBlock(std::vector<shared_ptr<Stmt>> statements, shared_ptr<Environment> environment);
+
+        void visitBlockStmt(shared_ptr<Block> stmt);
 
         void visitExpressionStmt(shared_ptr<Expression> stmt);
 

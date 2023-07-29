@@ -26,12 +26,27 @@ shared_ptr<Stmt> Parser::declaration() {
 */
 
 shared_ptr<Stmt> Parser::statement() {
-    return expressionStatement();
+    try {
+        return expressionStatement();
+    } catch (ParseError error) {
+        synchronize();
+        return nullptr;
+    }
 }
 
 shared_ptr<Stmt> Parser::expressionStatement() {
     shared_ptr<Expr> expr = expression();
     return make_shared<Expression>(expr);
+}
+
+std::vector<shared_ptr<Stmt>> Parser::block() {
+    std::vector<shared_ptr<Stmt>> statements;
+
+    while (!check(RETURN) && !isAtEnd()) {
+        statements.push_back(statement());
+    }
+
+    return statements;
 }
 
 shared_ptr<Expr> Parser::assignment() {
@@ -206,11 +221,7 @@ Parser::Parser(std::vector<Token> tokens) {
 }
 
 std::vector<shared_ptr<Stmt>> Parser::parse() {
-    std::vector<shared_ptr<Stmt>> statements;
-
-    while (!isAtEnd()) {
-        statements.push_back(statement());
-    }
+    std::vector<shared_ptr<Stmt>> statements = block();
 
     return statements;
 }

@@ -21,6 +21,8 @@ class Parser {
 
     shared_ptr<Stmt> expressionStatement();
 
+    std::vector<shared_ptr<Stmt>> block();
+
     shared_ptr<Expr> assignment();
 
     shared_ptr<Expr> equality();

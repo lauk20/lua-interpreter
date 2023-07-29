@@ -12,6 +12,7 @@ typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
 
 class Stmt;
 class StmtVisitor;
+class Block;
 class Expression;
 
 class Stmt {
@@ -23,7 +24,17 @@ class Stmt {
 
 class StmtVisitor {
     public:
+        virtual void visitBlockStmt(std::shared_ptr<Block> block) = 0;
         virtual void visitExpressionStmt(std::shared_ptr<Expression> expr) = 0;
+};
+
+class Block : public Stmt, public std::enable_shared_from_this<Block> {
+    public:
+        std::vector<std::shared_ptr<Stmt>> statements;
+
+        Block(std::vector<std::shared_ptr<Stmt>> statements);
+
+        void accept(std::shared_ptr<StmtVisitor> visitor);
 };
 
 class Expression : public Stmt, public std::enable_shared_from_this<Expression> {
