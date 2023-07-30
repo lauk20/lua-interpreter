@@ -28,11 +28,23 @@ shared_ptr<Stmt> Parser::declaration() {
 shared_ptr<Stmt> Parser::statement() {
     try {
         if (match({IF})) return ifStatement();
+        if (match({WHILE})) return whileStatement();
         return expressionStatement();
     } catch (ParseError error) {
         synchronize();
         return nullptr;
     }
+}
+
+shared_ptr<Stmt> Parser::whileStatement() {
+    shared_ptr<Expr> condition = expression();
+    consume(DO, "Expected 'do' after while condition.");
+
+    shared_ptr<Stmt> body = block();
+
+    consume(END, "Expected 'end' after while block.");
+
+    return make_shared<While>(condition, body);
 }
 
 shared_ptr<Stmt> Parser::elseifStatement() {

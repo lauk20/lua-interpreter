@@ -24,3 +24,11 @@ If::If(std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> thenBranch, std::v
 void If::accept(std::shared_ptr<StmtVisitor> visitor) {
     visitor->visitIfStmt(shared_from_this());
 }
+
+While::While(std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> body) : condition(condition), body(body) {
+
+}
+
+void While::accept(std::shared_ptr<StmtVisitor> visitor) {
+    visitor->visitWhileStmt(shared_from_this());
+}

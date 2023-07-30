@@ -123,13 +123,21 @@ void Interpreter::executeBlock(std::vector<shared_ptr<Stmt>> statements, shared_
 }
 
 void Interpreter::visitBlockStmt(shared_ptr<Block> stmt) {
-    executeBlock(stmt->statements, environment);
+    executeBlock(stmt->statements, std::make_shared<Environment>(environment));
 }
 
 void Interpreter::visitExpressionStmt(shared_ptr<Expression> stmt) {
     evaluate(stmt->expression);
     // we will temporarily print the output
     std::cout << stringify() << std::endl;
+}
+
+void Interpreter::visitWhileStmt(shared_ptr<While> stmt) {
+    evaluate(stmt->condition);
+    while (isTruthy(result)) {
+        execute(stmt->body);
+        evaluate(stmt->condition);
+    }
 }
 
 void Interpreter::visitIfStmt(shared_ptr<If> stmt) {
