@@ -37,3 +37,6 @@ Stmt.o: Stmt.cpp Stmt.hpp
 
 Environment.o: Environment.cpp Environment.hpp
 	$(CC) $(CFLAGS) -c Environment.cpp
+
+clean:
+	rm *.o
