@@ -49,6 +49,22 @@ void Interpreter::visitLiteralExpr(shared_ptr<Literal> expr) {
     result = expr->value;
 }
 
+void Interpreter::visitLogicalExpr(shared_ptr<Logical> expr) {
+    evaluate(expr->left);
+
+    if (expr->op.type == OR) {
+        if (isTruthy(result)) {
+            return;
+        }
+    } else {
+        if (!isTruthy(result)) {
+            return;
+        }
+    }
+
+    evaluate(expr->right);
+}
+
 void Interpreter::visitUnaryExpr(shared_ptr<Unary> expr) {
     evaluate(expr->right); // this will set result to the right operand
 

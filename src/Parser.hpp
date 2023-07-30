@@ -29,6 +29,10 @@ class Parser {
 
     shared_ptr<Expr> assignment();
 
+    shared_ptr<Expr> orParse();
+
+    shared_ptr<Expr> andParse();
+
     shared_ptr<Expr> equality();
 
     shared_ptr<Expr> comparison();

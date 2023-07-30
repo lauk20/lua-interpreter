@@ -81,12 +81,36 @@ shared_ptr<Stmt> Parser::block() {
 }
 
 shared_ptr<Expr> Parser::assignment() {
-    shared_ptr<Expr> expr = equality();
+    shared_ptr<Expr> expr = orParse();
 
     if (match({EQUAL})) {
         shared_ptr<Expr> value = assignment();
 
         return expr->make_assignment(std::static_pointer_cast<Variable>(expr)->name, value, previous(), "Invalid assignment target.");
+    }
+
+    return expr;
+}
+
+shared_ptr<Expr> Parser::orParse() {
+    shared_ptr<Expr> expr = andParse();
+
+    while (match({OR})) {
+        Token op = previous();
+        shared_ptr<Expr> right = andParse();
+        expr = make_shared<Logical>(expr, op, right);
+    }
+
+    return expr;
+}
+
+shared_ptr<Expr> Parser::andParse() {
+    shared_ptr<Expr> expr = equality();
+
+    while (match({AND})) {
+        Token op = previous();
+        shared_ptr<Expr> right = equality();
+        expr = make_shared<Logical>(expr, op, right);
     }
 
     return expr;

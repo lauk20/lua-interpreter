@@ -50,6 +50,14 @@ void Literal::accept(shared_ptr<ExprVisitor> visitor) {
     return visitor->visitLiteralExpr(this->shared_from_this());
 }
 
+Logical::Logical(std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right) : left(left), op(op), right(right) {
+
+}
+
+void Logical::accept(shared_ptr<ExprVisitor> visitor) {
+    return visitor->visitLogicalExpr(this->shared_from_this());
+}
+
 
 Unary::Unary(Token op, shared_ptr<Expr> right) : op(op) {
     this->op = op;

@@ -27,6 +27,8 @@ class Interpreter : public ExprVisitor, public StmtVisitor, public std::enable_s
 
         void visitLiteralExpr(shared_ptr<Literal> expr);
 
+        void visitLogicalExpr(shared_ptr<Logical> expr);
+
         void visitUnaryExpr(shared_ptr<Unary> expr);
 
         void visitVariableExpr(shared_ptr<Variable> expr);

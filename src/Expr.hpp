@@ -17,6 +17,7 @@ class Assign;
 class Binary;
 class Grouping;
 class Literal;
+class Logical;
 class Unary;
 class Variable;
 
@@ -33,6 +34,7 @@ class ExprVisitor {
         virtual void visitBinaryExpr(std::shared_ptr<Binary> expr) = 0;
         virtual void visitGroupingExpr(std::shared_ptr<Grouping> expr) = 0;
         virtual void visitLiteralExpr(std::shared_ptr<Literal> expr) = 0;
+        virtual void visitLogicalExpr(std::shared_ptr<Logical> expr) = 0;
         virtual void visitUnaryExpr(std::shared_ptr<Unary> expr) = 0;
         virtual void visitVariableExpr(std::shared_ptr<Variable> expr) = 0;
 };
@@ -73,6 +75,17 @@ class Literal : public Expr, public std::enable_shared_from_this<Literal> {
         variantX value;
 
         Literal(variantX value);
+
+        void accept(std::shared_ptr<ExprVisitor> visitor);
+};
+
+class Logical : public Expr, public std::enable_shared_from_this<Logical> {
+    public:
+        std::shared_ptr<Expr> left;
+        Token op;
+        std::shared_ptr<Expr> right;
+        
+        Logical(std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right);
 
         void accept(std::shared_ptr<ExprVisitor> visitor);
 };
