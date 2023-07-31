@@ -27,6 +27,7 @@ shared_ptr<Stmt> Parser::declaration() {
 
 shared_ptr<Stmt> Parser::statement() {
     try {
+        if (match({FOR})) return forStatement();
         if (match({IF})) return ifStatement();
         if (match({WHILE})) return whileStatement();
         return expressionStatement();
@@ -34,6 +35,73 @@ shared_ptr<Stmt> Parser::statement() {
         synchronize();
         return nullptr;
     }
+}
+
+shared_ptr<Stmt> Parser::forStatement() {
+    shared_ptr<Expr> initializer = assignment();
+    shared_ptr<Expression> init = make_shared<Expression>(initializer);
+
+    consume(COMMA, "Expected ',' after initializer.");
+
+    shared_ptr<Expr> end = nullptr;
+    end = expression();
+    //end = make_shared<Binary>(make_shared<Variable>(std::static_pointer_cast<Variable>(initializer)->name), Token(TILDE_EQUAL, "~=", nullptr, -1), end);
+
+    /*
+        This block of code is to ensure that the loop stops appropriately.
+        the loop condition is where let n = the initialized value (begin number), i be the variable initialized, and e be the end value (inclusive end number);
+        the loop continues where ( (n <= e && i <= e) || (n >= e && i >= e) )
+        this is needed because Lua loops allow numeric loops by default and this is their continuation condition.
+        we cannot just do <= or >= or ~= because there can be a loop like : for i = 10, 1, -2
+        if we chose <=, the loop will never run, if we chose >= then it will be correct, but if we chose ~= it will not stop (infinite loop)
+        same goes for a loop like: for i = 1, 10, 2
+        2 of the 3 comparisions will not work
+    */
+    shared_ptr<Expr> left_left = make_shared<Binary>((std::static_pointer_cast<Assign>(initializer)->value), Token(LESS_EQUAL, "<=", nullptr, -1), end);
+    shared_ptr<Expr> left_right = make_shared<Binary>(make_shared<Variable>(std::static_pointer_cast<Variable>(initializer)->name), Token(LESS_EQUAL, "<=", nullptr, -1), end);
+    shared_ptr<Expr> right_left = make_shared<Binary>((std::static_pointer_cast<Assign>(initializer)->value), Token(GREATER_EQUAL, ">=", nullptr, -1), end);
+    shared_ptr<Expr> right_right = make_shared<Binary>(make_shared<Variable>(std::static_pointer_cast<Variable>(initializer)->name), Token(GREATER_EQUAL, ">=", nullptr, -1), end);
+    shared_ptr<Expr> left = make_shared<Logical>(left_left, Token(AND, "and", nullptr, -1), left_right);
+    shared_ptr<Expr> right = make_shared<Logical>(right_left, Token(AND, "and", nullptr, -1), right_right);
+    end = make_shared<Logical>(left, Token(OR, "or", nullptr, -1), right);
+
+    shared_ptr<Expr> increment = nullptr;
+    if (match({COMMA})) {
+        increment = expression();
+        Token name = std::static_pointer_cast<Variable>(initializer)->name;
+        shared_ptr<Expr> incrementNode = make_shared<Binary>(make_shared<Variable>(std::static_pointer_cast<Variable>(initializer)->name), Token(PLUS, "+", nullptr, -1), make_shared<Literal>(std::static_pointer_cast<Literal>(increment)->value));
+        increment = make_shared<Variable>(name)->make_assignment(name, incrementNode, Token(PLUS, "", nullptr, -1), "Error in for loop increment.");
+    } else { // Lua default increment is +1
+        Token name = std::static_pointer_cast<Variable>(initializer)->name;
+        shared_ptr<Expr> incrementNode = make_shared<Binary>(make_shared<Variable>(std::static_pointer_cast<Variable>(initializer)->name), Token(PLUS, "+", nullptr, -1), make_shared<Literal>(1.0));
+        increment = make_shared<Variable>(name)->make_assignment(name, incrementNode, Token(PLUS, "", nullptr, -1), "Error in for loop increment.");
+    }
+
+    consume(DO, "Expected 'do' after for initializer.");
+
+    shared_ptr<Stmt> body = block();
+
+    consume(END, "Expected 'end' to close for loop block.");
+
+    // add incrementor to body and create while loop node
+    {
+        std::vector<shared_ptr<Stmt>> stmts;
+        stmts.push_back(body);
+        stmts.push_back(make_shared<Expression>(increment));
+        body = make_shared<Block>(stmts);
+
+        body = make_shared<While>(end, body);
+    }
+
+    // add initializer and while loop to body, creating block
+    if (initializer != nullptr) {
+        std::vector<shared_ptr<Stmt>> stmts;
+        stmts.push_back(init);
+        stmts.push_back(body);
+        body = make_shared<Block>(stmts);
+    }
+
+    return body;
 }
 
 shared_ptr<Stmt> Parser::whileStatement() {
@@ -210,6 +278,8 @@ shared_ptr<Expr> Parser::primary() {
         consume(RIGHT_PAREN, "Expect ')' after expression.");
         return make_shared<Grouping>(expr);
     }
+
+    std::cout << peek() << std::endl;
 
     throw error(peek(), "Expect expression.");
 }

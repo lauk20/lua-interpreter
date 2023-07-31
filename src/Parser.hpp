@@ -19,6 +19,8 @@ class Parser {
 
     shared_ptr<Stmt> statement();
 
+    shared_ptr<Stmt> forStatement();
+
     shared_ptr<Stmt> whileStatement();
 
     shared_ptr<Stmt> elseifStatement();
