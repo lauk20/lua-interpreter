@@ -72,6 +72,7 @@ void Interpreter::visitUnaryExpr(shared_ptr<Unary> expr) {
         case MINUS:
             checkNumberOperand(expr->op, result);
             result = -(std::get<0>(result));
+            break;
         case TILDE:
             result = !(isTruthy(result));
     }

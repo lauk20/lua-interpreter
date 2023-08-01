@@ -39,6 +39,7 @@ shared_ptr<Stmt> Parser::statement() {
 
 shared_ptr<Stmt> Parser::forStatement() {
     shared_ptr<Expr> initializer = assignment();
+    Token name = std::static_pointer_cast<Variable>(initializer)->name;
     shared_ptr<Expression> init = make_shared<Expression>(initializer);
 
     consume(COMMA, "Expected ',' after initializer.");
@@ -67,12 +68,10 @@ shared_ptr<Stmt> Parser::forStatement() {
 
     shared_ptr<Expr> increment = nullptr;
     if (match({COMMA})) {
-        increment = expression();
-        Token name = std::static_pointer_cast<Variable>(initializer)->name;
-        shared_ptr<Expr> incrementNode = make_shared<Binary>(make_shared<Variable>(std::static_pointer_cast<Variable>(initializer)->name), Token(PLUS, "+", nullptr, -1), make_shared<Literal>(std::static_pointer_cast<Literal>(increment)->value));
+        shared_ptr<Expr> inc = expression();
+        shared_ptr<Expr> incrementNode = make_shared<Binary>(make_shared<Variable>(std::static_pointer_cast<Variable>(initializer)->name), Token(PLUS, "+", nullptr, -1), inc);
         increment = make_shared<Variable>(name)->make_assignment(name, incrementNode, Token(PLUS, "", nullptr, -1), "Error in for loop increment.");
     } else { // Lua default increment is +1
-        Token name = std::static_pointer_cast<Variable>(initializer)->name;
         shared_ptr<Expr> incrementNode = make_shared<Binary>(make_shared<Variable>(std::static_pointer_cast<Variable>(initializer)->name), Token(PLUS, "+", nullptr, -1), make_shared<Literal>(1.0));
         increment = make_shared<Variable>(name)->make_assignment(name, incrementNode, Token(PLUS, "", nullptr, -1), "Error in for loop increment.");
     }
@@ -278,8 +277,6 @@ shared_ptr<Expr> Parser::primary() {
         consume(RIGHT_PAREN, "Expect ')' after expression.");
         return make_shared<Grouping>(expr);
     }
-
-    std::cout << peek() << std::endl;
 
     throw error(peek(), "Expect expression.");
 }
