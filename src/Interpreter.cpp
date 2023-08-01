@@ -8,7 +8,7 @@ using std::shared_ptr;
 typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
 
 
-Interpreter::Interpreter(shared_ptr<Environment> environment) : environment(environment) { }
+Interpreter::Interpreter(shared_ptr<Environment> environment) : environment(environment), globalEnvironment(environment) { }
 
 std::string Interpreter::stringify() {
     if (std::holds_alternative<double>(result)) {
@@ -139,6 +139,16 @@ void Interpreter::visitWhileStmt(shared_ptr<While> stmt) {
         execute(stmt->body);
         evaluate(stmt->condition);
     }
+}
+
+void Interpreter::visitVarStmt(shared_ptr<Var> stmt) {
+    variantX value = nullptr;
+    if (stmt->initializer != nullptr) {
+        evaluate(stmt->initializer);
+        value = result;
+    }
+
+    environment->defineLocal(stmt->name.lexeme, value);
 }
 
 void Interpreter::visitIfStmt(shared_ptr<If> stmt) {

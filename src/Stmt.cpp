@@ -32,3 +32,11 @@ While::While(std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> body) : cond
 void While::accept(std::shared_ptr<StmtVisitor> visitor) {
     visitor->visitWhileStmt(shared_from_this());
 }
+
+Var::Var(Token name, std::shared_ptr<Expr> initializer) : name(name), initializer(initializer) {
+
+}
+
+void Var::accept(std::shared_ptr<StmtVisitor> visitor) {
+    visitor->visitVarStmt(shared_from_this());
+}

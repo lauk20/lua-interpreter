@@ -16,6 +16,8 @@ class Interpreter : public ExprVisitor, public StmtVisitor, public std::enable_s
 
     std::shared_ptr<Environment> environment;
 
+    std::shared_ptr<Environment> globalEnvironment;
+
     std::string stringify();
 
     bool isTruthy(variantX object);
@@ -50,6 +52,8 @@ class Interpreter : public ExprVisitor, public StmtVisitor, public std::enable_s
         void visitExpressionStmt(shared_ptr<Expression> stmt);
 
         void visitWhileStmt(shared_ptr<While> stmt);
+
+        void visitVarStmt(shared_ptr<Var> stmt);
 
         void visitIfStmt(shared_ptr<If> stmt);
 

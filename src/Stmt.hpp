@@ -16,6 +16,7 @@ class Block;
 class Expression;
 class If;
 class While;
+class Var;
 
 class Stmt {
 
@@ -30,6 +31,7 @@ class StmtVisitor {
         virtual void visitExpressionStmt(std::shared_ptr<Expression> expr) = 0;
         virtual void visitIfStmt(std::shared_ptr<If> ifstmt) = 0;
         virtual void visitWhileStmt(std::shared_ptr<While> whilestmt) = 0;
+        virtual void visitVarStmt(std::shared_ptr<Var> var) = 0;
 };
 
 class Block : public Stmt, public std::enable_shared_from_this<Block> {
@@ -72,7 +74,6 @@ class While : public Stmt, public std::enable_shared_from_this<While> {
         void accept(std::shared_ptr<StmtVisitor> visitor);
 };
 
-/*
 class Var : public Stmt, public std::enable_shared_from_this<Var> {
     public:
         Token name;
@@ -82,6 +83,5 @@ class Var : public Stmt, public std::enable_shared_from_this<Var> {
 
         void accept(std::shared_ptr<StmtVisitor> visitor);
 };
-*/
 
 #endif

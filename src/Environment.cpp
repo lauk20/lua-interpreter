@@ -9,16 +9,15 @@ Environment::Environment(std::shared_ptr<Environment> enclosing) : enclosing(enc
 Environment::Environment() = default;
 
 void Environment::define(std::string name, variantX value) {
-    if (values.find(name) != values.end()) {
-        values[name] = value;
-        return;
-    }
-
     if (enclosing != nullptr) {
         enclosing->define(name, value);
         return;
     }
 
+    values[name] = value;
+}
+
+void Environment::defineLocal(std::string name, variantX value) {
     values[name] = value;
 }
 

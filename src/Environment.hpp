@@ -18,6 +18,7 @@ class Environment {
         Environment(std::shared_ptr<Environment> enclosing);
         Environment();
         void define(std::string name, variantX value);
+        void defineLocal(std::string name, variantX value);
         variantX get(Token name);
 };
 

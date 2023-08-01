@@ -219,6 +219,7 @@ const std::unordered_map<std::string, TokenType> Scanner::keywords {
     {"function", FUNCTION},
     {"if", IF},
     {"in", IN},
+    {"local", LOCAL},
     {"nil", NIL},
     {"not", NOT},
     {"or", OR},

@@ -15,7 +15,7 @@ shared_ptr<Expr> Parser::expression() {
 /*
 shared_ptr<Stmt> Parser::declaration() {
     try {
-        if (match({IDENTIFIER})) return varDeclaration();
+        if (match({LOCAL})) return varDeclaration();
 
         return statement();
     } catch (ParseError error) {
@@ -30,6 +30,7 @@ shared_ptr<Stmt> Parser::statement() {
         if (match({FOR})) return forStatement();
         if (match({IF})) return ifStatement();
         if (match({WHILE})) return whileStatement();
+        if (match({LOCAL})) return varDeclaration();
         return expressionStatement();
     } catch (ParseError error) {
         synchronize();
@@ -112,6 +113,17 @@ shared_ptr<Stmt> Parser::whileStatement() {
     consume(END, "Expected 'end' after while block.");
 
     return make_shared<While>(condition, body);
+}
+
+shared_ptr<Stmt> Parser::varDeclaration() {
+    Token name = consume(IDENTIFIER, "Expect variable name.");
+
+    shared_ptr<Expr> initializer = nullptr;
+    if (match({EQUAL})) {
+        initializer = expression();
+    }
+
+    return make_shared<Var>(name, initializer);
 }
 
 shared_ptr<Stmt> Parser::elseifStatement() {
