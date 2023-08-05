@@ -1,9 +1,11 @@
 #include <any>
 #include <iostream>
 #include <string>
+#include <memory>
 
 #include "Token.hpp"
-typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
+#include "LuaCallable_Forward.hpp"
+typedef std::variant<double, std::string, bool, std::nullptr_t, std::shared_ptr<LuaCallable>> variantX;
 
 Token::Token(TokenType type, std::string lexeme, variantX literal, int line) {
     this->type = type;

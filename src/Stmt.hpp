@@ -7,13 +7,13 @@
 
 #include "Expr.hpp"
 #include "Token.hpp"
-
-typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
+#include "LuaCallable_Forward.hpp"
 
 class Stmt;
 class StmtVisitor;
 class Block;
 class Expression;
+class Function;
 class If;
 class While;
 class Var;
@@ -29,6 +29,7 @@ class StmtVisitor {
     public:
         virtual void visitBlockStmt(std::shared_ptr<Block> block) = 0;
         virtual void visitExpressionStmt(std::shared_ptr<Expression> expr) = 0;
+        virtual void visitFunctionStmt(std::shared_ptr<Function> stmt) = 0;
         virtual void visitIfStmt(std::shared_ptr<If> ifstmt) = 0;
         virtual void visitWhileStmt(std::shared_ptr<While> whilestmt) = 0;
         virtual void visitVarStmt(std::shared_ptr<Var> var) = 0;
@@ -48,6 +49,17 @@ class Expression : public Stmt, public std::enable_shared_from_this<Expression> 
         std::shared_ptr<Expr> expression;
 
         Expression(std::shared_ptr<Expr> expression);
+
+        void accept(std::shared_ptr<StmtVisitor> visitor);
+};
+
+class Function : public Stmt, public std::enable_shared_from_this<Function> {
+    public:
+        Token name;
+        std::vector<Token> params;
+        std::shared_ptr<Stmt> body;
+        
+        Function(Token name, std::vector<Token> params, std::shared_ptr<Stmt> body);
 
         void accept(std::shared_ptr<StmtVisitor> visitor);
 };

@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "AstPrinter.hpp"
 #include "Environment.hpp"
 #include "Lua.hpp"
 #include "Parser.hpp"

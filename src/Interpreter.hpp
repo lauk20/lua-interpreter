@@ -1,30 +1,34 @@
+#pragma once
+
 #include <memory>
 #include <string>
 #include <stdexcept>
 
-#include "Environment.hpp"
+#include "Environment_Forward.hpp"
 #include "Expr.hpp"
+#include "Literal.hpp"
 #include "Lua.hpp"
+#include "LuaCallable_Forward.hpp"
+#include "LuaFunction.hpp"
 #include "RuntimeError.hpp"
 #include "Stmt.hpp"
 
 using std::shared_ptr;
-typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
 
 class Interpreter : public ExprVisitor, public StmtVisitor, public std::enable_shared_from_this<Interpreter> {
-    variantX result;
+    LiteralVal result;
 
-    std::shared_ptr<Environment> environment;
+    bool isTruthy(LiteralVal object);
 
-    std::shared_ptr<Environment> globalEnvironment;
-
-    std::string stringify();
-
-    bool isTruthy(variantX object);
-
-    bool isEqual(variantX left, variantX right);
+    bool isEqual(LiteralVal left, LiteralVal right);
 
     public:
+        std::string stringify();
+
+        std::shared_ptr<Environment> environment;
+
+        std::shared_ptr<Environment> globalEnvironment;
+
         Interpreter(shared_ptr<Environment> environment);
 
         void visitLiteralExpr(shared_ptr<Literal> expr);
@@ -35,9 +39,9 @@ class Interpreter : public ExprVisitor, public StmtVisitor, public std::enable_s
 
         void visitVariableExpr(shared_ptr<Variable> expr);
 
-        void checkNumberOperand(Token op, variantX operand);
+        void checkNumberOperand(Token op, LiteralVal operand);
 
-        void checkNumberOperands(Token op, variantX left, variantX right);
+        void checkNumberOperands(Token op, LiteralVal left, LiteralVal right);
 
         void visitGroupingExpr(shared_ptr<Grouping> expr);
 
@@ -51,6 +55,8 @@ class Interpreter : public ExprVisitor, public StmtVisitor, public std::enable_s
 
         void visitExpressionStmt(shared_ptr<Expression> stmt);
 
+        void visitFunctionStmt(shared_ptr<Function> stmt);
+
         void visitWhileStmt(shared_ptr<While> stmt);
 
         void visitVarStmt(shared_ptr<Var> stmt);
@@ -60,6 +66,8 @@ class Interpreter : public ExprVisitor, public StmtVisitor, public std::enable_s
         void visitAssignExpr(shared_ptr<Assign> expr);
 
         void visitBinaryExpr(shared_ptr<Binary> expr);
+
+        void visitCallExpr(shared_ptr<Call> expr);
 
         void interpret(std::vector<shared_ptr<Stmt>> expression);
 };

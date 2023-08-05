@@ -2,8 +2,8 @@ CC = g++
 
 CFLAGS = -std=c++17
 
-all: Lua.o Scanner.o Parser.o ParseError.o AstPrinter.o Expr.o RuntimeError.o Interpreter.o Stmt.o Environment.o
-	$(CC) $(CFLAGS) -o Lua Lua.o Scanner.o Token.o Parser.o ParseError.o AstPrinter.o Expr.o RuntimeError.o Interpreter.o Stmt.o Environment.o
+all: Lua.o Scanner.o Parser.o ParseError.o Expr.o RuntimeError.o Interpreter.o Stmt.o Environment.o LuaFunction.o Literal.o
+	$(CC) $(CFLAGS) -o Lua Lua.o Scanner.o Token.o Parser.o ParseError.o Expr.o RuntimeError.o Interpreter.o Stmt.o Environment.o LuaFunction.o Literal.o
 
 Lua.o: Lua.cpp Lua.hpp Scanner.hpp Parser.hpp Interpreter.hpp RuntimeError.hpp
 	$(CC) $(CFLAGS) -c Lua.cpp
@@ -37,6 +37,15 @@ Stmt.o: Stmt.cpp Stmt.hpp
 
 Environment.o: Environment.cpp Environment.hpp
 	$(CC) $(CFLAGS) -c Environment.cpp
+
+LuaCallable.o: LuaCallable.cpp LuaCallable.hpp
+	$(CC) $(CFLAGS) -c LuaCallable.cpp
+
+LuaFunction.o: LuaFunction.cpp LuaFunction.hpp
+	$(CC) $(CFLAGS) -c LuaFunction.cpp
+
+Literal.o: Literal.cpp Literal.hpp
+	$(CC) $(CFLAGS) -c Literal.cpp
 
 clean:
 	rm *.o

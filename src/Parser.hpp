@@ -31,6 +31,8 @@ class Parser {
 
     shared_ptr<Stmt> expressionStatement();
 
+    shared_ptr<Function> function();
+
     shared_ptr<Stmt> block();
 
     shared_ptr<Expr> assignment();
@@ -48,6 +50,10 @@ class Parser {
     shared_ptr<Expr> factor();
 
     shared_ptr<Expr> unary();
+
+    shared_ptr<Expr> finishCall(shared_ptr<Expr> callee);
+
+    shared_ptr<Expr> call();
 
     shared_ptr<Expr> primary();
 

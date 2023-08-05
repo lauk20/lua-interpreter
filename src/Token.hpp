@@ -5,10 +5,11 @@
 #include <iostream>
 #include <string>
 #include <variant>
+#include <memory>
 
 #include "TokenType.cpp"
-
-typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
+#include "LuaCallable_Forward.hpp"
+typedef std::variant<double, std::string, bool, std::nullptr_t, std::shared_ptr<LuaCallable>> variantX;
 
 /// Class to represent a Token
 class Token {

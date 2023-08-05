@@ -7,19 +7,20 @@
 #include <unordered_map>
 
 #include "Token.hpp"
-
-typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
+#include "Interpreter.hpp"
+#include "Literal.hpp"
+#include "LuaCallable_Forward.hpp"
 
 class Environment {
-    std::unordered_map<std::string, variantX> values;
+    std::unordered_map<std::string, LiteralVal> values;
     std::shared_ptr<Environment> enclosing;
 
     public:
         Environment(std::shared_ptr<Environment> enclosing);
         Environment();
-        void define(std::string name, variantX value);
-        void defineLocal(std::string name, variantX value);
-        variantX get(Token name);
+        void define(std::string name, LiteralVal value);
+        void defineLocal(std::string name, LiteralVal value);
+        LiteralVal get(Token name);
 };
 
 #endif

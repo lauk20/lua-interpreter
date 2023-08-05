@@ -3,8 +3,8 @@
 #include<unordered_map>
 
 #include "Token.hpp"
-
-typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
+#include "LuaCallable_Forward.hpp"
+typedef std::variant<double, std::string, bool, std::nullptr_t, std::shared_ptr<LuaCallable>> variantX;
 
 /// Scanner class to read source code into tokens
 class Scanner {

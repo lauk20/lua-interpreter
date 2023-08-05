@@ -33,6 +33,14 @@ void Binary::accept(shared_ptr<ExprVisitor> visitor) {
     return visitor->visitBinaryExpr(this->shared_from_this());
 }
 
+Call::Call(shared_ptr<Expr> callee, Token paren, std::vector<shared_ptr<Expr>> arguments) : callee(callee) , paren(paren), arguments(arguments) {
+
+}
+
+void Call::accept(shared_ptr<ExprVisitor> visitor) {
+    return visitor->visitCallExpr(this->shared_from_this());
+}
+
 Grouping::Grouping(shared_ptr<Expr> expression) {
     this->expression = expression;
 }
@@ -42,7 +50,7 @@ void Grouping::accept(shared_ptr<ExprVisitor> visitor) {
 }
 
 
-Literal::Literal(variantX value) {
+Literal::Literal(LiteralVal value) {
     this->value = value;
 }
 

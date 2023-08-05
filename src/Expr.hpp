@@ -6,15 +6,16 @@
 #include <memory>
 #include <variant>
 
+#include "Literal.hpp"
 #include "ParseError.hpp"
 #include "Token.hpp"
-
-typedef std::variant<double, std::string, bool, std::nullptr_t> variantX;
+#include "LuaCallable_Forward.hpp"
 
 class Expr;
 class ExprVisitor;
 class Assign;
 class Binary;
+class Call;
 class Grouping;
 class Literal;
 class Logical;
@@ -32,6 +33,7 @@ class ExprVisitor {
     public:
         virtual void visitAssignExpr(std::shared_ptr<Assign> expr) = 0;
         virtual void visitBinaryExpr(std::shared_ptr<Binary> expr) = 0;
+        virtual void visitCallExpr(std::shared_ptr<Call> expr) = 0;
         virtual void visitGroupingExpr(std::shared_ptr<Grouping> expr) = 0;
         virtual void visitLiteralExpr(std::shared_ptr<Literal> expr) = 0;
         virtual void visitLogicalExpr(std::shared_ptr<Logical> expr) = 0;
@@ -60,6 +62,17 @@ class Binary : public Expr, public std::enable_shared_from_this<Binary> {
         void accept(std::shared_ptr<ExprVisitor> visitor);
 };
 
+class Call : public Expr, public std::enable_shared_from_this<Call> {
+    public:
+        std::shared_ptr<Expr> callee;
+        Token paren;
+        std::vector<std::shared_ptr<Expr>> arguments;
+
+        Call(std::shared_ptr<Expr> callee, Token parent, std::vector<std::shared_ptr<Expr>> arguments);
+
+        void accept(std::shared_ptr<ExprVisitor> visitor);
+};
+
 class Grouping : public Expr, public std::enable_shared_from_this<Grouping> {
     public:
         std::shared_ptr<Expr> expression;
@@ -72,9 +85,9 @@ class Grouping : public Expr, public std::enable_shared_from_this<Grouping> {
 
 class Literal : public Expr, public std::enable_shared_from_this<Literal> {
     public:
-        variantX value;
+        LiteralVal value;
 
-        Literal(variantX value);
+        Literal(LiteralVal value);
 
         void accept(std::shared_ptr<ExprVisitor> visitor);
 };

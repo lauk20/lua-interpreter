@@ -31,6 +31,7 @@ shared_ptr<Stmt> Parser::statement() {
         if (match({IF})) return ifStatement();
         if (match({WHILE})) return whileStatement();
         if (match({LOCAL})) return varDeclaration();
+        if (match({FUNCTION})) return function();
         return expressionStatement();
     } catch (ParseError error) {
         synchronize();
@@ -161,6 +162,26 @@ shared_ptr<Stmt> Parser::expressionStatement() {
     return make_shared<Expression>(expr);
 }
 
+shared_ptr<Function> Parser::function() {
+    Token name = consume(IDENTIFIER, "Expect function name.");
+    consume(LEFT_PAREN, "Expect '(' after function name.");
+
+    std::vector<Token> parameters;
+    if (!check(RIGHT_PAREN)) {
+        do {
+            parameters.push_back(consume(IDENTIFIER, "Expect parameter name"));
+        } while (match({COMMA}));
+    }
+
+    consume(RIGHT_PAREN, "Expected ')' after parameters");
+
+    shared_ptr<Stmt> body = block();
+
+    consume(END, "Expected end after block.");
+
+    return make_shared<Function>(name, parameters, body);
+}
+
 shared_ptr<Stmt> Parser::block() {
     std::vector<shared_ptr<Stmt>> statements;
 
@@ -267,7 +288,35 @@ shared_ptr<Expr> Parser::unary() {
         return make_shared<Unary>(op, right);
     }
 
-    return primary();
+    return call();
+}
+
+shared_ptr<Expr> Parser::finishCall(shared_ptr<Expr> callee) {
+    std::vector<shared_ptr<Expr>> arguments;
+    
+    if (!check(RIGHT_PAREN)) {
+        do {
+            arguments.push_back(expression());
+        } while (match({COMMA}));
+    }
+
+    Token paren = consume(RIGHT_PAREN, "Expect ')' after arguments.");
+
+    return make_shared<Call>(callee, paren, arguments);
+}
+
+shared_ptr<Expr> Parser::call() {
+    shared_ptr<Expr> expr = primary();
+
+    while (1) {
+        if (match({LEFT_PAREN})) {
+            expr = finishCall(expr);
+        } else {
+            break;
+        }
+    }
+
+    return expr;
 }
 
 shared_ptr<Expr> Parser::primary() {
@@ -277,7 +326,7 @@ shared_ptr<Expr> Parser::primary() {
     if (match({NIL})) return make_shared<Literal>(nullptr);
 
     if (match({NUMBER, STRING})) {
-        return make_shared<Literal>(previous().literal);
+        return make_shared<Literal>(LiteralVal(previous().literal));
     }
 
     if (match({IDENTIFIER})) {
