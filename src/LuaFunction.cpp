@@ -16,4 +16,6 @@ LiteralVal LuaFunction::call(shared_ptr<Interpreter> interpreter, std::vector<Li
     }
 
     interpreter->executeBlock({declaration->body}, environment);
+
+    return LiteralVal(nullptr);
 }

@@ -10,20 +10,21 @@
 using std::shared_ptr;
 
 class PrintFunction : public LuaCallable, std::enable_shared_from_this<PrintFunction> {
-    PrintFunction() = default;
+    public:
+        PrintFunction() = default;
 
-    int arity() {
-        return 1;
-    }
+        int arity() {
+            return 1;
+        }
 
-    LiteralVal call(shared_ptr<Interpreter> interpreter, std::vector<LiteralVal> arguments) {
-        std::cout << interpreter->stringify() << std::endl;
-        return LiteralVal();
-    }
+        LiteralVal call(shared_ptr<Interpreter> interpreter, std::vector<LiteralVal> arguments) {
+            std::cout << interpreter->stringify() << std::endl;
+            return LiteralVal(nullptr);
+        }
 };
 
 Interpreter::Interpreter(shared_ptr<Environment> environment) : environment(environment), globalEnvironment(environment) {   
-    //environment->define("print", std::make_shared<PrintFunction>());
+    environment->define("print", LiteralVal(std::make_shared<PrintFunction>()));
 }
 
 std::string Interpreter::stringify() {
@@ -146,7 +147,7 @@ void Interpreter::visitBlockStmt(shared_ptr<Block> stmt) {
 void Interpreter::visitExpressionStmt(shared_ptr<Expression> stmt) {
     evaluate(stmt->expression);
     // we will temporarily print the output
-    std::cout << stringify() << std::endl;
+    //std::cout << stringify() << std::endl;
 }
 
 void Interpreter::visitFunctionStmt(shared_ptr<Function> stmt) {
