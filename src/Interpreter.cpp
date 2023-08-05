@@ -3,8 +3,6 @@
 #include <stdexcept>
 
 #include "Interpreter.hpp"
-#include "Literal.hpp"
-#include "LuaCallable.hpp"
 #include "Environment.hpp"
 
 using std::shared_ptr;

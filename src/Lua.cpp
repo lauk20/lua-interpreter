@@ -6,12 +6,12 @@
 #include <vector>
 
 #include "Environment.hpp"
+#include "Interpreter.hpp"
 #include "Lua.hpp"
 #include "Parser.hpp"
 #include "RuntimeError.hpp"
 #include "Scanner.hpp"
 #include "Token.hpp"
-#include "Interpreter.hpp"
 
 using std::make_shared;
 

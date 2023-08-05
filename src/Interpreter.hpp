@@ -8,7 +8,7 @@
 #include "Expr.hpp"
 #include "Literal.hpp"
 #include "Lua.hpp"
-#include "LuaCallable_Forward.hpp"
+#include "LuaCallable.hpp"
 #include "LuaFunction.hpp"
 #include "RuntimeError.hpp"
 #include "Stmt.hpp"
