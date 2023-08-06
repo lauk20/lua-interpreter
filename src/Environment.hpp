@@ -12,15 +12,19 @@
 #include "LuaCallable_Forward.hpp"
 
 class Environment {
-    std::unordered_map<std::string, LiteralVal> values;
+    //std::unordered_map<std::string, LiteralVal> values;
     std::shared_ptr<Environment> enclosing;
 
     public:
+        std::string sname;
+        std::unordered_map<std::string, LiteralVal> values;
         Environment(std::shared_ptr<Environment> enclosing);
+        Environment(std::shared_ptr<Environment> enclosing, std::string name);
+        Environment(std::string name);
         Environment();
         void define(std::string name, LiteralVal value);
         void defineLocal(std::string name, LiteralVal value);
         LiteralVal get(Token name);
-};
 
+};
 #endif

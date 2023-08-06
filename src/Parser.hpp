@@ -32,6 +32,8 @@ class Parser {
     shared_ptr<Stmt> expressionStatement();
 
     shared_ptr<Function> function();
+  
+    shared_ptr<Stmt> returnStatement();
 
     shared_ptr<Stmt> block();
 

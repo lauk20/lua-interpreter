@@ -17,7 +17,7 @@ using std::make_shared;
 
 bool hadError = false;
 bool hadRuntimeError = false;
-shared_ptr<Environment> globalEnv = make_shared<Environment>();
+shared_ptr<Environment> globalEnv = make_shared<Environment>("global");
 shared_ptr<Interpreter> interpreter = make_shared<Interpreter>(globalEnv);
 
 namespace Lua {

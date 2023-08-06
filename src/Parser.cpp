@@ -32,6 +32,7 @@ shared_ptr<Stmt> Parser::statement() {
         if (match({WHILE})) return whileStatement();
         if (match({LOCAL})) return varDeclaration();
         if (match({FUNCTION})) return function();
+        if (match({RETURN})) return returnStatement();
         return expressionStatement();
     } catch (ParseError error) {
         synchronize();
@@ -182,10 +183,20 @@ shared_ptr<Function> Parser::function() {
     return make_shared<Function>(name, parameters, body);
 }
 
+shared_ptr<Stmt> Parser::returnStatement() {
+    Token keyword = previous();
+    shared_ptr<Expr> value = nullptr;
+    if (!check(END)) {
+        value = expression();
+    }
+
+    return make_shared<Return>(keyword, value);
+}
+
 shared_ptr<Stmt> Parser::block() {
     std::vector<shared_ptr<Stmt>> statements;
 
-    while (!check(RETURN) && !check(END) && !check(ELSEIF) && !check(ELSE) && !isAtEnd()) {
+    while (!check(END) && !check(ELSEIF) && !check(ELSE) && !isAtEnd()) {
         statements.push_back(statement());
     }
 

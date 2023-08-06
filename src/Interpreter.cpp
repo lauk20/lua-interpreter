@@ -4,6 +4,7 @@
 
 #include "Interpreter.hpp"
 #include "Environment.hpp"
+#include "Return.hpp"
 
 using std::shared_ptr;
 
@@ -123,23 +124,41 @@ void Interpreter::execute(shared_ptr<Stmt> stmt) {
 }
 
 void Interpreter::executeBlock(std::vector<shared_ptr<Stmt>> statements, shared_ptr<Environment> env) {
-    auto pre = environment;
+    shared_ptr<Environment> pre = this->environment;
 
     try {
-        environment = env;
+        //std::cout << "executeBlock Prev Env: " << pre->sname << std::endl;
+        
+        /*
+        if (pre != nullptr && pre != NULL) {
+            //std::cout << "entered" << std::endl;
+            for (auto const& [key, val] : globalEnvironment->values) {
+                //std::cout << "print" << std::endl;
+                std::cout << val << std::endl;
+            }
+            std::cout << std::endl;
+        }
+        */
+
+        this->environment = env;
+        //std::cout << "executeBlock Curr Env: " << environment->sname << std::endl;
+
+        //std::cout << "BAHHHHHHHHHHHHH" << std::to_string(this->environment == this->globalEnvironment) << std::endl;
 
         for (shared_ptr<Stmt> statement : statements) {
             execute(statement);
         }
-    } catch(...) {
-        
-    }
 
-    this->environment = pre;
+        this->environment = pre;
+        //std::cout << "executeBlock Returned Env: " << environment->sname << std::endl;
+    } catch(...) {
+        this->environment = pre;
+        throw;
+    }
 }
 
 void Interpreter::visitBlockStmt(shared_ptr<Block> stmt) {
-    executeBlock(stmt->statements, std::make_shared<Environment>(environment));
+    executeBlock(stmt->statements, std::make_shared<Environment>(environment, "block"));
 }
 
 void Interpreter::visitExpressionStmt(shared_ptr<Expression> stmt) {
@@ -167,11 +186,12 @@ void Interpreter::visitVarStmt(shared_ptr<Var> stmt) {
         evaluate(stmt->initializer);
         value = result;
     }
-
+    //std::cout << "VVS : " << environment->sname << std::endl;
     environment->defineLocal(stmt->name.lexeme, value);
 }
 
 void Interpreter::visitIfStmt(shared_ptr<If> stmt) {
+    //std::cout << "visitIfStmt env: " << environment->sname << std::endl;
     evaluate(stmt->condition);
     if (isTruthy(result)) {
         execute(stmt->thenBranch);
@@ -187,7 +207,19 @@ void Interpreter::visitIfStmt(shared_ptr<If> stmt) {
     } else if (stmt->elseBranch != nullptr) {
         execute(stmt->elseBranch);
     }
+
+    //std::cout << "visitIfStmt end env: " << environment->sname << std::endl;
 }
+
+ void Interpreter::visitReturnStmt(shared_ptr<Return> stmt) {
+    LiteralVal value = nullptr;
+    if (stmt->value != nullptr) {
+        evaluate(stmt->value);
+        value = result;
+    }
+
+    throw ReturnException(value);
+ }
 
 void Interpreter::visitAssignExpr(shared_ptr<Assign> expr) {
     evaluate(expr->value);
@@ -261,7 +293,7 @@ void Interpreter::visitCallExpr(shared_ptr<Call> expr) {
         throw RuntimeError(expr->paren, "Expected " + std::to_string(function->arity()) + " arguments but got " + std::to_string(arguments.size()) + ".");
     }
 
-    function->call(shared_from_this(), arguments);
+    result = function->call(shared_from_this(), arguments);
 }
 
 void Interpreter::interpret(std::vector<shared_ptr<Stmt>> statements) {

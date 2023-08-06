@@ -17,4 +17,6 @@ class LiteralVal {
         LiteralVal(std::nullptr_t);
         LiteralVal(std::variant<double, std::string, bool, std::nullptr_t, std::shared_ptr<LuaCallable>>);
         LiteralVal();
+
+        friend std::ostream& operator<<(std::ostream &os, const LiteralVal& val);
 };

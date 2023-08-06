@@ -113,6 +113,10 @@ class Interpreter : public ExprVisitor, public StmtVisitor, public std::enable_s
         /// @brief visit If statement
         /// @param stmt the If statement
         void visitIfStmt(shared_ptr<If> stmt);
+        
+        /// @brief visit Return statement
+        /// @param stmt the Return statement
+        void visitReturnStmt(shared_ptr<Return> stmt);
 
         /// @brief visit Assign expr
         /// @param expr the Assign expr

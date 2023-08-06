@@ -33,6 +33,14 @@ void If::accept(std::shared_ptr<StmtVisitor> visitor) {
     visitor->visitIfStmt(shared_from_this());
 }
 
+Return::Return(Token keyword, std::shared_ptr<Expr> value) : keyword(keyword), value(value) {
+
+}
+
+void Return::accept(std::shared_ptr<StmtVisitor> visitor) {
+    visitor->visitReturnStmt(shared_from_this());
+}
+
 While::While(std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> body) : condition(condition), body(body) {
 
 }
